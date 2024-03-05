@@ -1,0 +1,61 @@
+/* This is the tree shape. It's like the logo but not exactly. */
+.container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    margin-top: 5vh;
+    background: #0b1a5e;
+    border-radius: 120px;
+    z-index: 1;
+}
+  
+.tree {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 13%;
+    top: 5%;
+}
+
+.treetriangle3 {
+    position: absolute;
+    width: 66%;
+    height: 36%;
+    bottom: 20%;
+    left: 3.5%;
+    background: #034f33;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.treetriangle2 {
+    position: absolute;
+    width: 53%;
+    height: 33%;
+    bottom: 35%;
+    left: 10%;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background: #046944;
+    z-index: 2;
+}
+
+.treetriangle1 {
+    position: absolute;
+    width: 42%;
+    height: 25%;
+    bottom: 50%;
+    left: 15.5%;
+    background: #038052;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    z-index: 3;
+}
+
+.trunk {
+    position: absolute;
+    width: 10%;
+    height: 16%;
+    background: #66503e;
+    z-index: -1;
+    bottom: 5%;
+    left: 32%;
+}
