@@ -1,6 +1,7 @@
 import Logo from '@/app/ui/logo';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import styles from '@/app/ui/home.module.css';
 
 export default function Page() {
   return (
@@ -10,7 +11,17 @@ export default function Page() {
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
         <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20">
-          <p className={`text-xl text-gray-800 md:text-3xl md:leading-normal`}>
+          
+          <div className={styles.container}>
+            <div className={styles.tree}>
+              <div className={styles.treetriangle1}></div>
+              <div className={styles.treetriangle2}></div>
+              <div className={styles.treetriangle3}></div>
+              <div className={styles.trunk}></div>
+            </div>
+          </div>
+
+          <p className = "text-2xl">
             <strong>Welcome to Forest Friends.</strong> Summer camp for forest fun!
           </p>
           <Link
