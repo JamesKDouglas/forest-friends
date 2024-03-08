@@ -11,7 +11,6 @@ const users = [
 
 const customers = [
   {
-    id: 'd6e15727-9fe1-4961-8c5b-ea44a9bd81aa',
     name: 'Evil Rabbit',
     email: 'evil@rabbit.com',
     phone: '555-555-5555',
@@ -21,7 +20,6 @@ const customers = [
 
 const reservations = [
   {
-    customer_id: customers[0].id,
     childNames: ["Good Hedgehog"],
     amount: 100,
     status: 'pending',

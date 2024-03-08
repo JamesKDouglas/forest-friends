@@ -30,7 +30,7 @@ export default function EditReservationForm({
               id="customer"
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={reservation.customer_id}
+              defaultValue={reservation.email}
             >
               <option value="" disabled>
                 Select a customer

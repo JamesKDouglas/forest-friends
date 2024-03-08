@@ -35,7 +35,7 @@ export async function fetchRevenue() {
 export async function fetchLatestReservations() {
   try {
     const data = await sql<LatestReservationRaw>`
-      SELECT reservations.amount, customers.name, customers.image_url, customers.email, reservations.id
+      SELECT reservations.amount, customers.name, customers.email, reservations.id
       FROM reservations
       JOIN customers ON reservations.customer_id = customers.id
       ORDER BY reservations.date DESC
@@ -103,7 +103,6 @@ export async function fetchFilteredReservations(
         reservations.status,
         customers.name,
         customers.email,
-        customers.image_url
       FROM reservations
       JOIN customers ON reservations.customer_id = customers.id
       WHERE
@@ -149,7 +148,7 @@ export async function fetchReservationById(id: string) {
     const data = await sql<ReservationForm>`
       SELECT
         reservations.id,
-        reservations.customer_id,
+        reservations.email,
         reservations.amount,
         reservations.status
       FROM reservations
@@ -194,7 +193,6 @@ export async function fetchFilteredCustomers(query: string) {
 		  customers.id,
 		  customers.name,
 		  customers.email,
-		  customers.image_url,
 		  COUNT(reservations.id) AS total_reservations,
 		  SUM(CASE WHEN reservations.status = 'pending' THEN reservations.amount ELSE 0 END) AS total_pending,
 		  SUM(CASE WHEN reservations.status = 'paid' THEN reservations.amount ELSE 0 END) AS total_paid
@@ -203,7 +201,7 @@ export async function fetchFilteredCustomers(query: string) {
 		WHERE
 		  customers.name ILIKE ${`%${query}%`} OR
         customers.email ILIKE ${`%${query}%`}
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url
+		GROUP BY customers.id, customers.name, customers.email,
 		ORDER BY customers.name ASC
 	  `;
 

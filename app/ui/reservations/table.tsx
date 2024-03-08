@@ -1,4 +1,4 @@
-import Image from 'next/image';
+
 import { UpdateReservation, DeleteReservation } from '@/app/ui/reservations/buttons';
 import ReservationStatus from '@/app/ui/reservations/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
@@ -26,7 +26,7 @@ export default async function ReservationsTable({
                 <div className="flex items-center justify-between border-b pb-4">
                   <div>
                     <div className="mb-2 flex items-center">
-                      <p>{reservation.name}</p>
+                      <p>{reservation.customerName}</p>
                     </div>
                     <p className="text-sm text-gray-500">{reservation.email}</p>
                   </div>
@@ -37,7 +37,7 @@ export default async function ReservationsTable({
                     <p className="text-xl font-medium">
                       {formatCurrency(reservation.amount)}
                     </p>
-                    <p>{formatDateToLocal(reservation.date)}</p>
+                    <p>{reservation.campTime}</p>
                   </div>
                   <div className="flex justify-end gap-2">
                     <UpdateReservation id={reservation.id} />
@@ -60,7 +60,7 @@ export default async function ReservationsTable({
                   Amount
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Date
+                  Camp Slot
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Status
@@ -79,7 +79,7 @@ export default async function ReservationsTable({
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex items-center gap-3">
         
-                      <p>{reservation.name}</p>
+                      <p>{reservation.customerName}</p>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
@@ -89,7 +89,7 @@ export default async function ReservationsTable({
                     {formatCurrency(reservation.amount)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {formatDateToLocal(reservation.date)}
+                    {reservation.campTime}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     <ReservationStatus status={reservation.status} />

@@ -1,4 +1,4 @@
-//Try using Prisma instead next time
+//Try using Prisma to seed the database with these types.
 export type User = {
   id: string;
   name: string;
@@ -16,12 +16,11 @@ export type Customer = {
 
 export type Reservation = {
   id: string;
-  customer_id: string;
+  email: string;
+  customerName: string;
   childNames: string;
   amount: number;
   status: 'pending' | 'paid'; 
-  startDate: string;
-  endDate: string;
   campTime: Array<Array<[string, string, string]>>;
 };
 
@@ -33,7 +32,7 @@ export type ExpectedAttendance = {
 
 export type LatestReservation = {
   id: string;
-  customer_id: string;
+  email: string;
   childNames: string;
   amount: number;
   status: 'pending' | 'paid'; 
@@ -49,13 +48,12 @@ export type LatestReservationRaw = Omit<LatestReservation, 'amount'> & {
 
 export type ReservationsTable = {
   id: string;
-  customer_id: string;
-  childNames: string;
+  email: string;
+  customerName: string;
+  childName: string;
+  status: 'pending' | 'paid';
+  campTime: Array<[string, string, string]>
   amount: number;
-  status: 'pending' | 'paid'; 
-  startDate: string;
-  endDate: string;
-  campTime: Array<Array<[string, string, string]>>, 
 };
 
 export type CustomersTableType = {
@@ -87,7 +85,7 @@ export type CustomerField = {
 
 export type ReservationForm = {
   id: string;
-  customer_id: string;
+  email: string;
   customerName: string;
   childName: string;
   status: 'pending' | 'paid';
