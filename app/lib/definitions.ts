@@ -94,3 +94,8 @@ export type ReservationForm = {
   campTime: Array<[string, string, string]>
   amount: number;
 };
+
+export type Revenue = {
+  month: string;
+  revenue: number;
+};
