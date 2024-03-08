@@ -78,13 +78,7 @@ export default async function ReservationsTable({
                 >
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex items-center gap-3">
-                      <Image
-                        src={reservation.image_url}
-                        className="rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${reservation.name}'s profile picture`}
-                      />
+        
                       <p>{reservation.name}</p>
                     </div>
                   </td>
