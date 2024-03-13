@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,20 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// This model represents a reservation made by a customer
 model Reservation {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @db.VarChar(255)
-  customerName   String?
-  childNames String  @db.VarChar(255)
-  amount    Money    
-  authorId  Int
-}  
-id: string;
-  email: string;
-  customerName: string;
-  childNames: string;
-  amount: number;
-  status: 'pending' | 'paid'; 
-  campTime: Array<Array<[string, string, string]>>;
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now()) // Automatically set the creation date
+  updatedAt       DateTime @updatedAt     // Automatically update the last update date
+  email           String   @db.VarChar(255)
+  customerName    String   @db.VarChar(255)
+  childNames      String   @db.VarChar(255)
+  amount          Decimal  @db.Decimal(10, 2) // Adjust precision and scale as needed
+  paid            Boolean
+  timePeriod      Int      // Specify the time period
+  notes           String   // Additional notes
+}
+
+// This model represents the camp schedule
+// It stores the start and end times for each scheduled period
+model Schedule {
+  id          Int       @id @default(autoincrement())
+  startList   DateTime[]  // Array of start times for each period
+  endList     DateTime[]  // Array of end times for each period
+}
