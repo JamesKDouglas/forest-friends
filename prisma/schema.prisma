@@ -9,22 +9,28 @@ datasource db {
 
 // This model represents a reservation made by a customer
 model Reservation {
-  id              Int      @id @default(autoincrement())
-  createdAt       DateTime @default(now()) // Automatically set the creation date
-  updatedAt       DateTime @updatedAt     // Automatically update the last update date
-  email           String   @db.VarChar(255)
-  customerName    String   @db.VarChar(255)
-  childNames      String   @db.VarChar(255)
-  amount          Decimal  @db.Decimal(10, 2) // Adjust precision and scale as needed
+  id              Int       @id @default(autoincrement())
+  createdAt       DateTime  @default(now()) // Automatically set the creation date
+  updatedAt       DateTime  @updatedAt     // Automatically update the last update date
+  email           String    @db.VarChar(255)
+  customerName    String    @db.VarChar(255)
+  childNames      String    @db.VarChar(255)
+  amount          Decimal   @db.Decimal(10, 2) // Adjust precision and scale as needed
   paid            Boolean
-  timePeriod      Int      // Specify the time period
-  notes           String   // Additional notes
+  notes           String    // Additional notes
+  
+  // Define the relation to Schedule
+  schedule        Schedule  @relation(fields: [scheduleId], references: [id]) //all schedules to which the relation belong (just one)
+  scheduleId      Int       // This is how you make a foreign key in Prisma: you need two rows of code for at least one table - here the table that is on the 1 side of 1-n.
 }
 
 // This model represents the camp schedule
 // It stores the start and end times for each scheduled period
 model Schedule {
-  id          Int       @id @default(autoincrement())
-  startList   DateTime[]  // Array of start times for each period
-  endList     DateTime[]  // Array of end times for each period
+  id          Int        @id @default(autoincrement()) 
+  startList   DateTime[] // Array of start times for each period
+  endList     DateTime[] // Array of end times for each period
+  
+  // Define the reverse relation to Reservation
+  reservations Reservation[]//All reservations that are in this schedule.
 }
