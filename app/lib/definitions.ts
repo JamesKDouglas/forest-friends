@@ -11,10 +11,10 @@ export type CustomerField = {
   email: string;
 };
 
-export type Revenue = {
-
-  month: string;
-  revenue: number;
+// period can be days or weeks. 
+export type Attendance = {
+  period: number;
+  children: number;
 };
 
 // export type User = {
@@ -42,22 +42,18 @@ export type Revenue = {
 //   campTime: Array<Array<[string, string, string]>>;
 // };
 
-export type ExpectedAttendance = {
-  year: number;
-  quarter: number;
-  children: number;
+export type LatestReservation = {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  email: string;
+  customerName: string;
+  childNames: string;
+  amount: number;
+  paid: true | false; 
+  notes: string;
+  schedule: number;
 };
-
-// export type LatestReservation = {
-//   id: string;
-//   email: string;
-//   childNames: string;
-//   amount: number;
-//   status: 'pending' | 'paid'; 
-//   startDate: string;
-//   endDate: string;
-//   campTime: Array<Array<[string, string, string]>>, 
-// };
 
 // The database returns a number for amount, but we later format it to a string with the formatCurrency function
 // export type LatestReservationRaw = Omit<LatestReservation, 'amount'> & {

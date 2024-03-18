@@ -7,12 +7,71 @@ import { PrismaClient } from '@prisma/client';
 
 import { formatCurrency } from './utils';
 
+const { expectedAttendance } = require('../app/lib/placeholder-data.js');
+
 const prisma = new PrismaClient();
 
 export async function getReservations(){
     const allRes = await prisma.reservations.findMany();
     console.log(allRes);
     return allRes;
+}
+
+// Get a list of expected attendance, either the next 7 months or the next 7 days ( including today ).
+
+// in the next.js dashboard app this was fetchRevenue and it was completely fudged. There was no generation of monthly revenue figures from invoice data. They just make some data manually, put it into a database table then take it out again.
+// I can't say that I see the point of that for a real app. So that's an important decision - do I just want to use a placeholder, or do I want to make this real? 
+
+
+export async function fetchAttendance(){
+    let period = "days"; //I would like to build this out so you could toggle to weeks. Whatever. Start with days.
+    
+    console.log(period);
+    //get all the reservations made in the past x days
+    let days =0;
+    if (period == "days"){
+        days = 7;
+    } else {
+        days = 7*7; //7 days a week, 7 weeks.
+        // now condense the data, counting up all the reservations for the week.
+    }
+
+    let now = Date.now();
+    let past = new Date();
+
+    past.setDate(past.getDate() - days);
+
+    const upcomingRes = await prisma.reservations.findMany({
+        where: {
+            date:{
+                lte: now,
+                gte: past,
+            }
+        }
+    });
+
+    //now summarize how many people are coming in each day OR each week.
+    //what does the object look like when returned by prisma? What kind of methods does it have?
+
+    // right now there is a "one child one reservation" policy. Parents can still use autofill on the form of course. But they can't literally just set # of children to 2 or more on a single form - there is only one place for the child name.
+
+    // I should put in an easter egg for "Johnny" "DROP TABLE". Just console log a "lol, good one." Confetti?
+
+    console.log(upcomingRes)
+
+    //fudge it for now,
+    return expectedAttendance;
+    // let summaryAtt = [];
+    // if (period == "days"){
+    //     //
+    //     for (let i=0;i<6;i++){
+
+    //         summaryAtt.push()
+    //     }
+    // } else if (period == "weeks"){
+
+    // }
+
 }
 
 export async function getSchedules(){
