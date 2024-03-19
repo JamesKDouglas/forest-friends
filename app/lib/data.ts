@@ -5,9 +5,7 @@ import type { Schedule, Reservation } from '@prisma/client';
 
 import { PrismaClient } from '@prisma/client';
 
-import { formatCurrency } from './utils';
-
-const { expectedAttendance } = require('../app/lib/placeholder-data.js');
+const { expectedAttendance } = require('@/app/lib/placeholder-data.js');
 
 const prisma = new PrismaClient();
 
@@ -36,16 +34,16 @@ export async function fetchAttendance(){
         // now condense the data, counting up all the reservations for the week.
     }
 
-    let now = Date.now();
+    let now = new Date();
     let past = new Date();
 
     past.setDate(past.getDate() - days);
 
-    const upcomingRes = await prisma.reservations.findMany({
+    const upcomingRes = await prisma.reservation.findMany({
         where: {
-            date:{
-                lte: now,
-                gte: past,
+            createdAt:{
+                lte: now.toISOString(),
+                gte: past.toISOString(),
             }
         }
     });
@@ -75,7 +73,7 @@ export async function fetchAttendance(){
 }
 
 export async function getSchedules(){
-    const allSchedules = await prisma.schedules.findMany();
+    const allSchedules = await prisma.schedule.findMany();
     console.log(allSchedules);
     return allSchedules;
 }

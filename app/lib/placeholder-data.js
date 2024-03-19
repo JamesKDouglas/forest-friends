@@ -76,6 +76,8 @@ for (let i=0;i<4;i++){
 let start2 = [];
 let end2 = [];
 let days = 0;
+let dayNum;
+
 for (let i=0;i<5;i++){
   // console.log("hi");
   days = () => {
