@@ -15,6 +15,17 @@ export async function getReservations(){
     return allRes;
 }
 
+export async function fetchLatestReservations(){
+    const latestRes = await prisma.reservation.findMany({
+        orderBy: {
+            createdAt: 'desc',
+        },
+        take: 5,
+    });
+
+    console.log("latestReservations:", latestRes);
+    return latestRes;
+}
 // Get a list of expected attendance, either the next 7 months or the next 7 days ( including today ).
 
 // in the next.js dashboard app this was fetchRevenue and it was completely fudged. There was no generation of monthly revenue figures from invoice data. They just make some data manually, put it into a database table then take it out again.

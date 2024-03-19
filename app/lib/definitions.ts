@@ -32,17 +32,7 @@ export type Attendance = {
 //   childNames: Array<[string]>;
 // };
 
-// export type Reservation = {
-//   id: string;
-//   email: string;
-//   customerName: string;
-//   childNames: string;
-//   amount: number;
-//   status: 'pending' | 'paid'; 
-//   campTime: Array<Array<[string, string, string]>>;
-// };
-
-export type LatestReservation = {
+export type Reservation = {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -54,6 +44,8 @@ export type LatestReservation = {
   notes: string;
   schedule: number;
 };
+
+export type LatestReservations = Array<Reservation>;
 
 // The database returns a number for amount, but we later format it to a string with the formatCurrency function
 // export type LatestReservationRaw = Omit<LatestReservation, 'amount'> & {
