@@ -2,11 +2,10 @@
 //This page has all the functions responsible for interacting with the database. 
 
 import type { Schedule, Reservation } from '@prisma/client';
-
 import { PrismaClient } from '@prisma/client';
+import { unstable_noStore as noStore } from 'next/cache';
 
 const { expectedAttendance } = require('@/app/lib/placeholder-data.js');
-
 const prisma = new PrismaClient();
 
 export async function getReservations(){
@@ -115,6 +114,71 @@ export async function updateReservation(id: number, newReservationData: Reservat
     })
 
     console.log("reservation updated!", reservation);
+}
+
+export async function fetchCardData(){
+    //Here we fetch some data from tables and process it into summaries:
+    //1. How much revenue has been collected this calendar year. - get all of them since jan 1 and add all the amounts.
+    //2. How much in outstanding payments stand now. - get all reservations that are marked paid: false since jan 1 and sum them.
+    //3. Total reservations made this calendar year. - count all the reservation records made since jan 1. 
+    //4. Total customers - get all reservation records. Collect all the customerNames. Make a set. Report the number of unique names
+    noStore();//no caching - this is supposed to be a live readout.
+
+    let reservationsThisYear;//all the actual records of reservations
+    
+    let thisYear = new Date().getFullYear();
+    let start = new Date(`January 1, ${thisYear}`);
+    
+    let resThisYr;//how many reservations
+    let custThisYr =0;
+
+    let revThisYr =0;//rev for revenue
+    let paymentOutst =0;
+
+    try{
+        //Prisma will return an array of object, not an object of objects.
+        reservationsThisYear = await prisma.reservation.findMany(
+            {
+                where: {
+                    createdAt:{
+                        gte: start,
+                    }
+                }
+
+            }
+        );
+        console.log(reservationsThisYear);
+
+        resThisYr = Object.keys(reservationsThisYear).length;
+
+        let custNames = reservationsThisYear.map((el: Reservation)=>el.customerName);
+        let custNamesSet = new Set(custNames);        
+        custThisYr = custNamesSet.size;
+
+        revThisYr = reservationsThisYear.map((el: Reservation) => +el.amount).reduce((a:number,c:number)=> a+c, 0);
+        
+        paymentOutst = reservationsThisYear.map((el: Reservation) => {
+            if (el.paid==false){
+                return +el.amount;
+            } else {
+                return 0;
+            }
+        }).reduce((a:number,c:number) => a+c,0);
+
+        // console.log("payment values outstanding:", paymentOutst);
+        // paymentOutst = paymentOutst.reduce((a:number,c:number)=>a+c,0);
+        return {
+            revThisYr,
+            paymentOutst,
+            resThisYr,
+            custThisYr,
+        }
+
+    } catch(err) {
+        console.log(err);
+        throw new Error("trouble with card data");
+    }
+
 }
 
 export async function updateSchedule(id: number, newScheduleData: Schedule){
