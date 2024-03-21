@@ -8,6 +8,7 @@ datasource db {
 }
 
 // This model represents a reservation made by a customer
+// childNames is plural which is kind of a mistake but I'm not going to remake it. It's not much of a mistake anyways - we're expecting 2 names albeit for 1 person!
 model Reservation {
   id              Int       @id @default(autoincrement())
   createdAt       DateTime  @default(now()) // Automatically set the creation date

@@ -9,12 +9,14 @@ const { expectedAttendance } = require('@/app/lib/placeholder-data.js');
 const prisma = new PrismaClient();
 
 export async function getReservations(){
+    noStore();
     const allRes = await prisma.reservations.findMany();
     console.log(allRes);
     return allRes;
 }
 
 export async function fetchLatestReservations(){
+    noStore();
     const latestRes = await prisma.reservation.findMany({
         orderBy: {
             createdAt: 'desc',
@@ -32,6 +34,8 @@ export async function fetchLatestReservations(){
 
 
 export async function fetchAttendance(){
+    // await new Promise((resolve)=>setTimeout(resolve, 3000));
+    noStore();
     let period = "days"; //I would like to build this out so you could toggle to weeks. Whatever. Start with days.
     
     console.log(period);
@@ -83,6 +87,7 @@ export async function fetchAttendance(){
 }
 
 export async function getSchedules(){
+    noStore();
     const allSchedules = await prisma.schedule.findMany();
     console.log(allSchedules);
     return allSchedules;
@@ -94,6 +99,7 @@ export async function getSchedules(){
 // https://www.prisma.io/docs/orm/prisma-client/debugging-and-troubleshooting/handling-exceptions-and-errors
 
 export async function fetchFilteredReservations(query: string){
+    noStore();
     try{
         const data = await prisma.reservations.findMany();
         console.log(data);
@@ -104,10 +110,13 @@ export async function fetchFilteredReservations(query: string){
 }
 
 export async function getReservationById(id: number){
+    noStore();
+
     //? Not sure how to use prisma to get a record by id.
 }
 
 export async function updateReservation(id: number, newReservationData: Reservation){
+    noStore();
     const reservation = await prisma.reservation.update({
         where: { id: id },
         data: {newReservationData},
@@ -117,6 +126,8 @@ export async function updateReservation(id: number, newReservationData: Reservat
 }
 
 export async function fetchCardData(){
+    // await new Promise((resolve) => setTimeout(resolve, 3000)); Delay to test skeleton
+
     //Here we fetch some data from tables and process it into summaries:
     //1. How much revenue has been collected this calendar year. - get all of them since jan 1 and add all the amounts.
     //2. How much in outstanding payments stand now. - get all reservations that are marked paid: false since jan 1 and sum them.
@@ -182,6 +193,7 @@ export async function fetchCardData(){
 }
 
 export async function updateSchedule(id: number, newScheduleData: Schedule){
+    noStore();
     const schedule = await prisma.schedule.update({
         where: { id: id },
         data: {newScheduleData},
@@ -191,6 +203,7 @@ export async function updateSchedule(id: number, newScheduleData: Schedule){
 }
 
 export async function putReservation(newReservationData: Reservation){
+    noStore();
     await prisma.reservation.create({
         data:{
             newReservationData
@@ -199,6 +212,7 @@ export async function putReservation(newReservationData: Reservation){
 }
 
 export async function putSchedule(newScheduleData: Schedule){
+    noStore();
     await prisma.schedule.create(
         {
             data: {

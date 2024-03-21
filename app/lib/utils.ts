@@ -23,8 +23,8 @@ export const formatDateToLocal = (
 
 export const generateYAxis = (attendance: Attendance[]) => {
   // Calculate what labels we need to display on the y-axis
-  // based on highest record and in 1000s
   const yAxisLabels = [];
+  // console.log("attendance:", attendance);
   const highestRecord = Math.max(...attendance.map((period) => period.children));
   console.log("highestRecord: ", highestRecord);
   const topLabel = highestRecord;
