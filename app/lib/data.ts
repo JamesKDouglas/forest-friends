@@ -16,6 +16,8 @@ export async function getReservations(){
 }
 
 export async function fetchLatestReservations(){
+    // await new Promise((resolve)=>setTimeout(resolve, 3000));
+
     noStore();
     const latestRes = await prisma.reservation.findMany({
         orderBy: {

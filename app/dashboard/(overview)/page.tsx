@@ -3,12 +3,11 @@ import AttendanceChart from '@/app/ui/dashboard/attendance-chart';
 import LatestReservations from '@/app/ui/dashboard/latest-reservations';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
-import { AttendanceChartSkeleton } from '@/app/ui/skeletons';
+import { AttendanceChartSkeleton, LatestReservationsSkeleton } from '@/app/ui/skeletons';
 
-import { fetchLatestReservations, fetchCardData } from '@/app/lib/data'
+import { fetchCardData } from '@/app/lib/data'
  
 export default async function Page() {
-  const latestReservations = await fetchLatestReservations();
   //1. How much revenue has been collected this calendar year. - get all of them since jan 1 and add all the amounts.
     //2. How much in outstanding payments stand now. - get all reservations that are marked paid: false since jan 1 and sum them.
     //3. Total reservations made this calendar year. - count all the reservation records made since jan 1. 
@@ -40,7 +39,9 @@ export default async function Page() {
         <Suspense fallback = {<AttendanceChartSkeleton/>}>
           <AttendanceChart/>
         </Suspense>
-        <LatestReservations latestReservations={latestReservations} />
+        <Suspense fallback = {<LatestReservationsSkeleton/>}>
+          <LatestReservations/>
+        </Suspense>
       </div>
     </main>
   );

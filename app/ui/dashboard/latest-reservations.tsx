@@ -4,13 +4,10 @@ import Image from 'next/image';
 import { lusitana } from '@/app/ui/fonts';
 import { LatestReservations } from '@/app/lib/definitions';
 import { formatCurrency } from '@/app/lib/utils';
+import { fetchLatestReservations } from '@/app/lib/data';
 
-
-export default async function LatestReservations({
-  latestReservations,
-}: {
-  latestReservations: LatestReservations[];
-}) {
+export default async function LatestReservations() {
+  const latestReservations = await fetchLatestReservations();
   return (
     <div className="flex w-full flex-col md:col-span-4">
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
