@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 export async function getReservations(){
     noStore();
     const allRes = await prisma.reservations.findMany();
-    console.log(allRes);
+    // console.log(allRes);
     return allRes;
 }
 
@@ -26,21 +26,17 @@ export async function fetchLatestReservations(){
         take: 5,
     });
 
-    console.log("latestReservations:", latestRes);
+    // console.log("latestReservations:", latestRes);
     return latestRes;
 }
 // Get a list of expected attendance, either the next 7 months or the next 7 days ( including today ).
-
-// in the next.js dashboard app this was fetchRevenue and it was completely fudged. There was no generation of monthly revenue figures from invoice data. They just make some data manually, put it into a database table then take it out again.
-// I can't say that I see the point of that for a real app. So that's an important decision - do I just want to use a placeholder, or do I want to make this real? 
-
 
 export async function fetchAttendance(){
     // await new Promise((resolve)=>setTimeout(resolve, 3000));
     noStore();
     let period = "days"; //I would like to build this out so you could toggle to weeks. Whatever. Start with days.
     
-    console.log(period);
+    // console.log(period);
     //get all the reservations made in the past x days
     let days =0;
     if (period == "days"){
@@ -71,7 +67,7 @@ export async function fetchAttendance(){
 
     // I should put in an easter egg for "Johnny" "DROP TABLE". Just console log a "lol, good one." Confetti?
 
-    console.log(upcomingRes)
+    // console.log(upcomingRes)
 
     //fudge it for now,
     return expectedAttendance;
@@ -91,7 +87,7 @@ export async function fetchAttendance(){
 export async function getSchedules(){
     noStore();
     const allSchedules = await prisma.schedule.findMany();
-    console.log(allSchedules);
+    // console.log(allSchedules);
     return allSchedules;
 }
 
@@ -100,14 +96,56 @@ export async function getSchedules(){
 //Can I use prisma to do some sort of filtered fetch? Anyways I want to use try catch blocks.
 // https://www.prisma.io/docs/orm/prisma-client/debugging-and-troubleshooting/handling-exceptions-and-errors
 
-export async function fetchFilteredReservations(query: string){
+const ITEMS_PER_PAGE = 6;
+export async function fetchFilteredReservations(
+    query: string, 
+    currentPage:number,){
     noStore();
-    try{
-        const data = await prisma.reservations.findMany();
-        console.log(data);
-        return data;
-    } catch {
 
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    // id: number;
+    // createdAt: string;
+    // updatedAt: string;
+    // email: string;
+    // customerName: string;
+    // childNames: string;
+    // amount: number;
+    // paid: true | false; 
+    // notes: string;
+    // schedule: number;
+    try{
+
+        // const data = await prisma.reservation.findMany({
+        //     where: {
+        //       OR: Object.keys(prisma.reservation.createUnchecked({}))
+        //         .map(field => ({
+        //           [field]: {
+        //             contains: query
+        //           }
+        //         }))
+        //     }
+        //   });
+
+        // { createdAt: { contains: query } },
+        // { updatedAt: { contains: query } },
+        // { email: { contains: query } },
+        // { customerName: { contains: query } },
+        // { childNames: { contains: query } },
+        // { notes: { contains: query },
+        const data = await prisma.reservation.findMany({
+            where: {
+                OR: [
+                    {childNames: { contains: query, mode: 'insensitive' }},
+                    {customerName: { contains: query, mode: 'insensitive' }},
+                    {email: { contains: query, mode: 'insensitive' }},
+                ]
+              }
+        });
+        // console.log(data);
+        return data;
+    } catch (e){
+        console.log(e);
     }    
 }
 
@@ -160,7 +198,7 @@ export async function fetchCardData(){
 
             }
         );
-        console.log(reservationsThisYear);
+        // console.log(reservationsThisYear);
 
         resThisYr = Object.keys(reservationsThisYear).length;
 

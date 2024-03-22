@@ -189,10 +189,10 @@ export function ReservationsTableSkeleton() {
                   Amount
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Date
+                  Period
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Status
+                  Paid?
                 </th>
                 <th
                   scope="col"

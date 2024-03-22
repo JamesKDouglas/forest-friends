@@ -1,7 +1,7 @@
 import { CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 
-export default function ReservationStatus({ status }: { status: string }) {
+export default function ReservationStatus({ status }: { status: boolean }) {
   return (
     <span
       className={clsx(
@@ -12,13 +12,13 @@ export default function ReservationStatus({ status }: { status: string }) {
         },
       )}
     >
-      {status === 'pending' ? (
+      {status === false ? (
         <>
           Pending
           <ClockIcon className="ml-1 w-4 text-gray-500" />
         </>
       ) : null}
-      {status === 'paid' ? (
+      {status === true ? (
         <>
           Paid
           <CheckIcon className="ml-1 w-4 text-white" />

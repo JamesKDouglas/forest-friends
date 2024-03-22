@@ -1,4 +1,3 @@
-
 import { UpdateReservation, DeleteReservation } from '@/app/ui/reservations/buttons';
 import ReservationStatus from '@/app/ui/reservations/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
@@ -12,7 +11,7 @@ export default async function ReservationsTable({
   currentPage: number;
 }) {
   const reservations = await fetchFilteredReservations(query, currentPage);
-
+  // console.log(reservations);
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
@@ -30,7 +29,7 @@ export default async function ReservationsTable({
                     </div>
                     <p className="text-sm text-gray-500">{reservation.email}</p>
                   </div>
-                  <ReservationStatus status={reservation.status} />
+                  <ReservationStatus status={reservation.paid} />
                 </div>
                 <div className="flex w-full items-center justify-between pt-4">
                   <div>
@@ -63,7 +62,7 @@ export default async function ReservationsTable({
                   Camp Slot
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Status
+                  Paid?
                 </th>
                 <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
@@ -86,13 +85,13 @@ export default async function ReservationsTable({
                     {reservation.email}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {formatCurrency(reservation.amount)}
+                    {`$${reservation.amount}`}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {reservation.campTime}
+                    {`${reservation.scheduleId}`}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    <ReservationStatus status={reservation.status} />
+                    <ReservationStatus status={reservation.paid} />
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
