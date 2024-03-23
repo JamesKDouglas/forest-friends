@@ -7,12 +7,52 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 const { expectedAttendance } = require('@/app/lib/placeholder-data.js');
 const prisma = new PrismaClient();
+const ITEMS_PER_PAGE = 6;
 
 export async function getReservations(){
     noStore();
     const allRes = await prisma.reservations.findMany();
     // console.log(allRes);
     return allRes;
+}
+
+export async function fetchReservationsPages(query: string){
+    noStore();
+
+    // I don't want to be hitting up the database if there is no actual query
+    if (query = ""){
+        return null;
+    }
+
+    try{
+        let count = 0; 
+        if (/^\d+$/.test(query)){
+            //This just searches for the exact value of course. I'm starting to get into like if someone types in 1, should that search for invoice of value 100 or 201? Idk it's an edge case.
+            let queryNum = +query;
+            count = await prisma.reservation.count({
+                where: {
+                    amount: { equals: queryNum },
+                  }
+            });
+        } else {
+            count = await prisma.reservation.count({
+                where: {
+                    OR: [
+                        {childNames: { contains: query, mode: 'insensitive' }},
+                        {customerName: { contains: query, mode: 'insensitive' }},
+                        {email: { contains: query, mode: 'insensitive' }},
+                        {notes: { contains: query, mode: 'insensitive' }},
+                    ]
+                }
+            });
+        }
+        console.log("count of records found:", count);
+        const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+        return totalPages;
+    } catch(e){
+        console.log(e);
+    }
+
 }
 
 export async function fetchLatestReservations(){
@@ -96,52 +136,45 @@ export async function getSchedules(){
 //Can I use prisma to do some sort of filtered fetch? Anyways I want to use try catch blocks.
 // https://www.prisma.io/docs/orm/prisma-client/debugging-and-troubleshooting/handling-exceptions-and-errors
 
-const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredReservations(
     query: string, 
     currentPage:number,){
     noStore();
-
+    if (query = ""){
+        return null;
+    }
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-    // id: number;
-    // createdAt: string;
-    // updatedAt: string;
-    // email: string;
-    // customerName: string;
-    // childNames: string;
-    // amount: number;
-    // paid: true | false; 
-    // notes: string;
-    // schedule: number;
+    //The old sql query was,
+    // customers.name ILIKE ${`%${query}%`} OR
+    // customers.email ILIKE ${`%${query}%`} OR
+    // invoices.amount::text ILIKE ${`%${query}%`} OR
+    // invoices.date::text ILIKE ${`%${query}%`} OR
+    // invoices.status ILIKE ${`%${query}%`}
     try{
-
-        // const data = await prisma.reservation.findMany({
-        //     where: {
-        //       OR: Object.keys(prisma.reservation.createUnchecked({}))
-        //         .map(field => ({
-        //           [field]: {
-        //             contains: query
-        //           }
-        //         }))
-        //     }
-        //   });
-
-        // { createdAt: { contains: query } },
-        // { updatedAt: { contains: query } },
-        // { email: { contains: query } },
-        // { customerName: { contains: query } },
-        // { childNames: { contains: query } },
-        // { notes: { contains: query },
-        const data = await prisma.reservation.findMany({
-            where: {
-                OR: [
-                    {childNames: { contains: query, mode: 'insensitive' }},
-                    {customerName: { contains: query, mode: 'insensitive' }},
-                    {email: { contains: query, mode: 'insensitive' }},
-                ]
-              }
-        });
+        // If I type in '100' in the search it better return all invoices that are $100, right?
+        //Then I need to handle the typing.
+        let data = ""; 
+        if (/^\d+$/.test(query)){
+            //This just searches for the exact value of course. I'm starting to get into like if someone types in 1, should that search for invoice of value 100 or 201? Idk it's an edge case.
+            let queryNum = +query;
+            data = await prisma.reservation.findMany({
+                where: {
+                    amount: { equals: queryNum },
+                  }
+            });
+        } else {
+            data = await prisma.reservation.findMany({
+                where: {
+                    OR: [
+                        {childNames: { contains: query, mode: 'insensitive' }},
+                        {customerName: { contains: query, mode: 'insensitive' }},
+                        {email: { contains: query, mode: 'insensitive' }},
+                        {notes: { contains: query, mode: 'insensitive' }},
+                    ]
+                }
+            });
+        }
         // console.log(data);
         return data;
     } catch (e){
