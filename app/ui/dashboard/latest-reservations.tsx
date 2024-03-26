@@ -42,7 +42,7 @@ export default async function LatestReservations() {
                 <p
                   className={`${lusitana.className} truncate text-sm font-medium md:text-base`}
                 >
-                  {`$${reservation.amount}`}
+                  {`$${reservation.amount/100}`}
                 </p>
               </div>
             );

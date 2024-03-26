@@ -1,3 +1,5 @@
+'use client';
+
 import { Schedules, Schedule } from '@/app/lib/definitions';
 import Link from 'next/link';
 import {
@@ -8,6 +10,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import { createReservation } from '@/app/lib/action';
+import { useFormState } from 'react-dom';
+
 
 // id: number;
 // createdAt: string;
@@ -20,6 +24,9 @@ import { createReservation } from '@/app/lib/action';
 // notes: string;
 // schedule: number;
 export default function Form({schedules}: {schedules:Schedules}) {
+  const initialState = { message: null, errors: {}};
+  const [state, dispatch] = useFormState(createReservation, initialState);
+
   // const schedules = await fetchSchedules();
   console.log("Schedules: ", schedules);
   return (
@@ -149,7 +156,7 @@ export default function Form({schedules}: {schedules:Schedules}) {
         </div>
 
         {/* Invoice Status. I guess this should only appear for employees. */}
-        {/* <fieldset>
+        <fieldset>
           <legend className="mb-2 block text-sm font-medium">
             Set payment status
           </legend>
@@ -190,8 +197,8 @@ export default function Form({schedules}: {schedules:Schedules}) {
               
             </div>
             
-          </div> */}
-          {/* <div id="customer-error" aria-live="polite" aria-atomic="true">
+          </div>
+          <div id="customer-error" aria-live="polite" aria-atomic="true">
             {state.errors?.status &&
               state.errors.status.map((error: string) => (
                 <p className="mt-2 text-sm text-red-500" key={error}>
@@ -203,8 +210,8 @@ export default function Form({schedules}: {schedules:Schedules}) {
             <p className="mt-2 text-sm text-red-500">
               {state.message}
             </p>    
-          </div> */}
-        {/* </fieldset> */}
+          </div>
+        </fieldset>
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link

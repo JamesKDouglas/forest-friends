@@ -23,7 +23,16 @@ const FormSchema = z.object({
 
 const CreateReservation = FormSchema.omit({ id: true, createdAt: true, updatedAt: true, paid:true});
 
-export async function createReservation(formData: FormData){
+export type State = {
+    errors?: {
+      customerName?: string[];
+      amount?: string[];
+      paid?: string[];
+    };
+    message?: string | null;
+  };
+
+export async function createReservation(prevState: State, formData: FormData){
     const { customerName, childNames, email, amount, notes, schedule } = CreateReservation.parse({
         customerName: formData.get('customerName'),
         childNames: formData.get('childName'),
