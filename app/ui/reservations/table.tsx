@@ -10,8 +10,9 @@ export default async function ReservationsTable({
   query: string;
   currentPage: number;
 }) {
+  console.log("query as it comes into table.tsx:", query);
   const reservations = await fetchFilteredReservations(query, currentPage);
-  const schedules = await fetchSchedules();
+  // const schedules = await fetchSchedules();
   // console.log(reservations);
   return (
     <div className="mt-6 flow-root">
@@ -35,7 +36,7 @@ export default async function ReservationsTable({
                 <div className="flex w-full items-center justify-between pt-4">
                   <div>
                     <p className="text-xl font-medium">
-                      {reservation.amount.toString()}
+                      {`$${reservation.amount/100}`}
                     </p>
                     <p>{reservation.campTime}</p>
                   </div>
@@ -86,7 +87,7 @@ export default async function ReservationsTable({
                     {reservation.email}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {`$${reservation.amount}`}
+                    {`$${reservation.amount/100}`}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {`${reservation.scheduleId}`}

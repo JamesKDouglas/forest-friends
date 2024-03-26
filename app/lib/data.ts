@@ -20,7 +20,7 @@ export async function fetchReservationsPages(query: string){
     noStore();
 
     // I don't want to be hitting up the database if there is no actual query
-    if (query = ""){
+    if (query === ""){
         return null;
     }
 
@@ -139,8 +139,9 @@ export async function fetchSchedules(){
 export async function fetchFilteredReservations(
     query: string, 
     currentPage:number,){
+
     noStore();
-    if (query = ""){
+    if (query === ""){
         return null;
     }
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -151,6 +152,7 @@ export async function fetchFilteredReservations(
     // invoices.amount::text ILIKE ${`%${query}%`} OR
     // invoices.date::text ILIKE ${`%${query}%`} OR
     // invoices.status ILIKE ${`%${query}%`}
+    console.log("query inside fetchFilteredReservations:", query);
     try{
         // If I type in '100' in the search it better return all invoices that are $100, right?
         //Then I need to handle the typing.
@@ -165,6 +167,8 @@ export async function fetchFilteredReservations(
             });
         } else {
             data = await prisma.reservation.findMany({
+                skip: offset,
+                take: ITEMS_PER_PAGE,
                 where: {
                     OR: [
                         {childNames: { contains: query, mode: 'insensitive' }},
@@ -175,7 +179,7 @@ export async function fetchFilteredReservations(
                 }
             });
         }
-        // console.log(data);
+        console.log(data);
         return data;
     } catch (e){
         console.log(e);
@@ -185,7 +189,6 @@ export async function fetchFilteredReservations(
 export async function getReservationById(id: number){
     noStore();
 
-    //? Not sure how to use prisma to get a record by id.
 }
 
 export async function updateReservation(id: number, newReservationData: Reservation){

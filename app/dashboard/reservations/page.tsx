@@ -19,7 +19,7 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1;
 
   const totalPages = await fetchReservationsPages(query);
-
+  console.log("totalPages: ", totalPages);
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
