@@ -20,6 +20,41 @@ async function seedReservations(prisma) {
   }
 }
 
+async function deleteSchedules(prisma){
+  try{
+    await prisma.schedule.deleteMany();
+    console.log("all schedules in schedule table deleted.")
+  } catch (e){
+    console.log(e);
+  }
+}
+let name = "";
+let desc = "";
+async function updateSchedules(prisma){
+  console.log("yes hello updating schedules now")
+  try{
+    for (let id=1;id<=3;id++){
+      name = schedules[id-1].name;
+      desc = schedules[id-1].desc;
+
+      const log = await prisma.schedule.update({
+        where:{
+          id: id,
+        }, 
+        data:{
+          name: name,
+          desc: desc,
+        }
+      });
+
+      console.log("prisma came back with:", log);
+
+    }
+    
+  } catch (e){
+    console.log(e);
+  }
+}
 async function seedSchedules(prisma) {
   try {
     await prisma.schedule.createMany({
@@ -37,15 +72,19 @@ async function seedSchedules(prisma) {
 const prisma = new PrismaClient();
 
 async function main() {  
-    await seedSchedules(prisma);
-    await seedReservations(prisma);
+    // await deleteSchedules(prisma);
+    // await seedSchedules(prisma);
+    // await seedReservations(prisma);
+    console.log('about to run the update schedules thingy');
+    await updateSchedules(prisma);
 }
 
 async function nada(){
+
     return ("");
 };
 
-  nada().then(async () => {
+  main().then(async () => {
     await prisma.$disconnect()
   })
   .catch(async (e) => {

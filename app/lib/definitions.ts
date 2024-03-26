@@ -4,7 +4,7 @@
 
 //However, there are other types that we use in the app - derived types. For example there is no customer data type. So if we want to show a list of customers it's derived from the reservations data.
 
-export type CustomerField = {
+export type Customer = {
   //an id is handy because it will become part of a react table and we want a unique id for that.
   id: string;
   name: string;
@@ -47,6 +47,15 @@ export type Reservation = {
 
 export type LatestReservations = Array<Reservation>;
 
+export type Schedule = {
+  id:number,
+  name: string;
+  desc: string;
+  startList:[Date, Date],//This is how you declare a type of array of dates - just more than one.
+  endList:[Date, Date],
+}
+
+export type Schedules = Array<Schedule>;
 // The database returns a number for amount, but we later format it to a string with the formatCurrency function
 // export type LatestReservationRaw = Omit<LatestReservation, 'amount'> & {
 //   amount: number;
@@ -95,8 +104,7 @@ export type LatestReservations = Array<Reservation>;
 //   total_paid: string;
 // };
 
-// export type CustomerField = {
-//   id: string;
+// export type Customer = {
 //   name: string;
 // };
 

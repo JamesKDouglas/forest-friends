@@ -1,7 +1,7 @@
 import { UpdateReservation, DeleteReservation } from '@/app/ui/reservations/buttons';
 import ReservationStatus from '@/app/ui/reservations/status';
 import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
-import { fetchFilteredReservations, fetchSchedules } from '@/app/lib/data';
+import { fetchFilteredReservations } from '@/app/lib/data';
 
 export default async function ReservationsTable({
   query,
@@ -11,7 +11,6 @@ export default async function ReservationsTable({
   currentPage: number;
 }) {
   const reservations = await fetchFilteredReservations(query, currentPage);
-  const schedules = await fetchSchedules();
   // console.log(reservations);
   return (
     <div className="mt-6 flow-root">
@@ -35,7 +34,7 @@ export default async function ReservationsTable({
                 <div className="flex w-full items-center justify-between pt-4">
                   <div>
                     <p className="text-xl font-medium">
-                      {reservation.amount.toString()}
+                      {formatCurrency(reservation.amount)}
                     </p>
                     <p>{reservation.campTime}</p>
                   </div>

@@ -17,7 +17,7 @@ model Reservation {
   customerName    String    @db.VarChar(255)
   childNames      String    @db.VarChar(255)
   amount          Decimal   @db.Decimal(10, 2) // Adjust precision and scale as needed
-  paid            Boolean
+  paid            Boolean   @default(false)
   notes           String    // Additional notes
   
   // Define the relation to Schedule
@@ -27,8 +27,11 @@ model Reservation {
 
 // This model represents the camp schedule
 // It stores the start and end times for each scheduled period
+// Uniqueness of name is not enforced at the database level only in the ui.
 model Schedule {
   id          Int        @id @default(autoincrement()) 
+  name        String     @default("no name")
+  desc        String     @default("no description")
   startList   DateTime[] // Array of start times for each period
   endList     DateTime[] // Array of end times for each period
   

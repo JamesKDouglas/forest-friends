@@ -124,8 +124,8 @@ export async function fetchAttendance(){
 
 }
 
-export async function getSchedules(){
-    noStore();
+export async function fetchSchedules(){
+    // noStore();//I don't really want the whole schedule table being looked up with each reservation search.
     const allSchedules = await prisma.schedule.findMany();
     // console.log(allSchedules);
     return allSchedules;

@@ -120,16 +120,22 @@ for (let i=0;i<4;i++){
 const schedules = [
   {
     id: 1,
+    name: "Camp BearCub",
+    desc: "The first 3 days of May, 9am - 3pm.",
     startList: start1,
     endList: end1,
   },
   {
     id: 2,
+    name: "Badger Days",
+    desc: "Every Saturday in June, 9am - 3pm.",
     startList: start2,
     endList: end2,
   },
   {
     id: 3,
+    name: "BunBun Club",
+    desc: "Every weekend in July, 3pm - 7pm.",
     startList: start3,
     endList: end3,
   },
