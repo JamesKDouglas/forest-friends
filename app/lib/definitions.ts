@@ -42,7 +42,7 @@ export type Reservation = {
   amount: number;
   paid: true | false; 
   notes: string;
-  schedule: number;
+  scheduleId: number;
 };
 
 export type LatestReservations = Array<Reservation>;

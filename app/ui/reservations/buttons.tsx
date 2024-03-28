@@ -16,7 +16,7 @@ export function CreateReservation() {
 export function UpdateReservation({ id }: { id: string }) {
   return (
     <Link
-      href="/dashboard/reservations"
+      href={`/dashboard/reservations/${id}/edit`}
       className="rounded-md border p-2 hover:bg-gray-100"
     >
       <PencilIcon className="w-5" />

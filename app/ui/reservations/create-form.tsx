@@ -6,10 +6,11 @@ import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
+  CalendarIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
-import { createReservation } from '@/app/lib/action';
+import { createReservation } from '@/app/lib/actions';
 import { useFormState } from 'react-dom';
 
 
@@ -30,7 +31,7 @@ export default function Form({schedules}: {schedules:Schedules}) {
   // const schedules = await fetchSchedules();
   console.log("Schedules: ", schedules);
   return (
-    <form action={createReservation}>
+    <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -46,6 +47,7 @@ export default function Form({schedules}: {schedules:Schedules}) {
                 placeholder="Enter name of gaurdian/parent"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               />
+              <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
             </div>
           </div>
         </div>
@@ -64,6 +66,7 @@ export default function Form({schedules}: {schedules:Schedules}) {
                 placeholder="Enter name of camper"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               />
+              <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
             </div>
           </div>
         </div>
@@ -126,27 +129,24 @@ export default function Form({schedules}: {schedules:Schedules}) {
             Choose schedule
           </label>
           <div className="relative">
-            <select
-              id="schedule"
-              name="scheduleId"
-              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue=""
-              aria-describedby="customer-error"
-            >
-              <option value="" disabled>
-                Select a schedule
+          <select
+            id="schedule"
+            name="scheduleId"
+            className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 pr-8 text-sm outline-2 placeholder:text-gray-500" 
+            defaultValue=""
+            aria-describedby="customer-error"
+          >
+            <option value="" disabled>
+              Select a schedule
+            </option>
+            {schedules.map((schedule) => (
+              <option key={schedule.id} value={schedule.id}>
+                {schedule.desc}
               </option>
-              {schedules.map((schedule) => {
-                  return(
-                  <option key={schedule.id} value={schedule.id}>
-                    {schedule.desc}
-                  </option>
-                  );
-                }
-              )}
-            </select>
-            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
-          </div>
+            ))}
+          </select>
+          <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" /> 
+        </div>
           <div id="customer-error" aria-live="polite" aria-atomic="true">
             {/* {state.errors?.customerId &&
           state.errors.customerId.map((error: string) => (
@@ -157,7 +157,7 @@ export default function Form({schedules}: {schedules:Schedules}) {
           {/* ))} */}
         </div>
 
-        {/* Invoice Status. I guess this should only appear for employees. */}
+        {/* reservation Status. I guess this should only appear for employees. */}
         <fieldset>
           <legend className="mb-2 block text-sm font-medium">
             Set payment status
@@ -167,7 +167,7 @@ export default function Form({schedules}: {schedules:Schedules}) {
               <div className="flex items-center">
                 <input
                   id="pending"
-                  name="status"
+                  name="paid"
                   type="radio"
                   value="pending"
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"

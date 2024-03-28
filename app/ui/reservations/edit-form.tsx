@@ -1,51 +1,128 @@
 'use client';
 
-import { CustomerField, ReservationForm } from '@/app/lib/definitions';
+import { Reservation, Schedules } from '@/app/lib/definitions';
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
+  CalendarIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
+import { updateReservation } from '@/app/lib/actions';
+import { useFormState } from 'react-dom';
 
-export default function EditReservationForm({
-  reservation,
-  customers,
+export default function Form({ 
+  reservation, 
+  schedules 
 }: {
-  reservation: ReservationForm;
-  customers: CustomerField[];
+  reservation: Reservation; 
+  schedules: Schedules[];
 }) {
-  return (
-    <form>
+  const initialState = { message: null, errors: {}};
+  const updateReservationWithId = updateReservation.bind(null, reservation.id);
+  const [ state, dispatch ] = useFormState(updateReservationWithId, initialState);
+
+  
+  return  <>
+    <div className="mb-4">
+          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+            Reservation Id
+          </label>
+          <div className="relative">
+            <input
+              id="id"
+              name="id"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={reservation.id}
+              readOnly
+            />
+             
+            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+        
+    <form action = {dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-            Choose customer
+            Customer name
           </label>
           <div className="relative">
-            <select
+            <input
               id="customer"
-              name="customerId"
+              name="customerName"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={reservation.email}
-            >
-              <option value="" disabled>
-                Select a customer
-              </option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
-                </option>
-              ))}
-            </select>
+              defaultValue={reservation.customerName}
+            />
+             
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
         </div>
+        {/* email */}
+        <div className="mb-4">
+          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+            Email
+          </label>
+          <div className="relative">
+            <input
+              id="email"
+              name="email"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={reservation.email}
+            />
+             
+            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+        {/* Child Name */}
+        <div className="mb-4">
+          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+            Camper name
+          </label>
+          <div className="relative">
+            <input
+              id="child"
+              name="childNames"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={reservation.childNames}
+            />
+             
+            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+        {/* schedule */}
+        <div className="mb-4">
+          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+            Schedule
+          </label>
+          <div className="relative">
+          <select
+              id="schedule"
+              name="scheduleId"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 pr-8 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={schedules[reservation.scheduleId-1].desc}
+              aria-describedby="customer-error"
+            >
+              <option value="" disabled>
+                Select a schedule
+              </option>
+              {schedules.map((schedule) => {
+                  return(
+                  <option key={schedule.id} value={schedule.id}>
+                    {schedule.desc}
+                  </option>
+                  );
+                }
+              )}
+            </select>
+            <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" /> 
+          </div>
+        </div>
 
-        {/* Reservation Amount */}
+        {/*  Amount */}
         <div className="mb-4">
           <label htmlFor="amount" className="mb-2 block text-sm font-medium">
             Choose an amount
@@ -56,17 +133,34 @@ export default function EditReservationForm({
                 id="amount"
                 name="amount"
                 type="number"
-                step="0.01"
+        
                 defaultValue={reservation.amount}
-                placeholder="Enter USD amount"
+                placeholder="Enter CAD amount"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               />
               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
         </div>
-
-        {/* Reservation Status */}
+          {/* notes */}
+          <div className="mb-4">
+                    <label htmlFor="notes" className="mb-2 block text-sm font-medium">
+                      Notes
+                    </label>
+                    <div className="relative mt-2 rounded-md">
+                      <div className="relative">
+                        <textarea
+                          id="notes"
+                          name="notes"
+                          placeholder=""
+                          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          defaultValue={reservation.notes}
+                        >
+                        </textarea>
+                      </div>
+                    </div>
+                  </div>
+        {/* Invoice Paid Status */}
         <fieldset>
           <legend className="mb-2 block text-sm font-medium">
             Set the reservation status
@@ -78,8 +172,8 @@ export default function EditReservationForm({
                   id="pending"
                   name="status"
                   type="radio"
-                  value="pending"
-                  defaultChecked={reservation.status === 'pending'}
+                  value="false"
+                  defaultChecked={reservation.paid === false}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -94,8 +188,8 @@ export default function EditReservationForm({
                   id="paid"
                   name="status"
                   type="radio"
-                  value="paid"
-                  defaultChecked={reservation.status === 'paid'}
+                  value="true"
+                  defaultChecked={reservation.paid === true}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -119,5 +213,6 @@ export default function EditReservationForm({
         <Button type="submit">Edit Reservation</Button>
       </div>
     </form>
-  );
+    </>
+  
 }

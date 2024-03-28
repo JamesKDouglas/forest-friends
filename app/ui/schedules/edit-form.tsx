@@ -1,6 +1,6 @@
 'use client';
 
-import { CustomerField, ReservationForm } from '@/app/lib/definitions';
+import { Reservation } from '@/app/lib/definitions';
 import {
   CheckIcon,
   ClockIcon,
@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-export default function EditReservationForm({
+export default function Form({
   reservation,
   customers,
 }: {

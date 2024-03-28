@@ -29,6 +29,9 @@ export default async function Page({
         <Search placeholder="Search reservations..." />
         <CreateReservation />
       </div>
+      <div className={`${lusitana.className}`}>
+        <p>Notes are searched but not displayed in the table below. Click on a reservation to find out more.</p>
+      </div>
        <Suspense key={query + currentPage} fallback={<ReservationsTableSkeleton />}>
         <Table query={query} currentPage={currentPage} />
        </Suspense>

@@ -19,15 +19,11 @@ export async function getReservations(){
 export async function fetchReservationsPages(query: string){
     noStore();
 
-    // I don't want to be hitting up the database if there is no actual query
-    if (query === ""){
-        return null;
-    }
 
     try{
         let count = 0; 
         if (/^\d+$/.test(query)){
-            //This just searches for the exact value of course. I'm starting to get into like if someone types in 1, should that search for invoice of value 100 or 201? Idk it's an edge case.
+            //This just searches for the exact value of course. I'm starting to get into like if someone types in 1, should that search for of value 100 or 201? Idk it's an edge case.
             let queryNum = +query;
             count = await prisma.reservation.count({
                 where: {
@@ -141,9 +137,6 @@ export async function fetchFilteredReservations(
     currentPage:number,){
 
     noStore();
-    if (query === ""){
-        return null;
-    }
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
     //The old sql query was,
@@ -152,7 +145,7 @@ export async function fetchFilteredReservations(
     // invoices.amount::text ILIKE ${`%${query}%`} OR
     // invoices.date::text ILIKE ${`%${query}%`} OR
     // invoices.status ILIKE ${`%${query}%`}
-    console.log("query inside fetchFilteredReservations:", query);
+    // console.log("query inside fetchFilteredReservations:", query);
     try{
         // If I type in '100' in the search it better return all invoices that are $100, right?
         //Then I need to handle the typing.
@@ -161,6 +154,11 @@ export async function fetchFilteredReservations(
             //This just searches for the exact value of course. I'm starting to get into like if someone types in 1, should that search for invoice of value 100 or 201? Idk it's an edge case.
             let queryNum = +query;
             data = await prisma.reservation.findMany({
+                orderBy: [
+                    {
+                        id: 'desc',
+                    }
+                ],
                 where: {
                     amount: { equals: queryNum },
                   }
@@ -169,6 +167,11 @@ export async function fetchFilteredReservations(
             data = await prisma.reservation.findMany({
                 skip: offset,
                 take: ITEMS_PER_PAGE,
+                orderBy: [
+                    {
+                        id: 'desc',
+                    }
+                ],
                 where: {
                     OR: [
                         {childNames: { contains: query, mode: 'insensitive' }},
@@ -179,26 +182,24 @@ export async function fetchFilteredReservations(
                 }
             });
         }
-        console.log(data);
+        // console.log(data);
         return data;
     } catch (e){
         console.log(e);
     }    
 }
 
-export async function getReservationById(id: number){
+export async function fetchReservationById(id: number){
     noStore();
-
-}
-
-export async function updateReservation(id: number, newReservationData: Reservation){
-    noStore();
-    const reservation = await prisma.reservation.update({
-        where: { id: id },
-        data: {newReservationData},
-    })
-
-    console.log("reservation updated!", reservation);
+    try{
+        const reservation = await prisma.reservation.findUnique({
+            where:{ id: id },
+        });
+        reservation.amount = +reservation.amount/100;//type correction and turn pennies to dollars.
+        return reservation;
+    } catch(e){
+        console.log(e);
+    }
 }
 
 export async function fetchCardData(){
