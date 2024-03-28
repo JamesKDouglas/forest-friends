@@ -1,5 +1,6 @@
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { deleteReservation } from '@/app/lib/actions';
 
 export function CreateReservation() {
   return (
@@ -24,13 +25,15 @@ export function UpdateReservation({ id }: { id: string }) {
   );
 }
 
-export function DeleteReservation({ id }: { id: string }) {
+export function DeleteReservation({ id }: { id: number }) {
+  const deleteReservationWithId = deleteReservation.bind(null, id);
+
   return (
-    <>
+    <form action={deleteReservationWithId}>
       <button className="rounded-md border p-2 hover:bg-gray-100">
         <span className="sr-only">Delete</span>
         <TrashIcon className="w-5" />
       </button>
-    </>
+    </form>
   );
 }

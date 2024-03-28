@@ -169,8 +169,8 @@ export default function Form({
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
-                  id="pending"
-                  name="status"
+                  id="paid"
+                  name="paid"
                   type="radio"
                   value="false"
                   defaultChecked={reservation.paid === false}

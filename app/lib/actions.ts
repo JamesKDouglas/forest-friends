@@ -54,17 +54,6 @@ export async function updateReservation(id: number, prevState: State,
     paid: formData.get('paid'),
   });
 
-  // id: z.number(),
-  // createdAt: z.string(),
-  // updatedAt: z.string(),
-  // customerName: z.string(),
-  // childNames: z.string(),
-  // email: z.string(),
-  // amount: z.coerce.number(),
-  // notes: z.string(),
-  // schedule: z.coerce.number(),
-  // paid: z.boolean(),
-
   // if (!validatedFields.success){
   //   return {
   //     errors: validatedFields.error.flatten().fieldErrors,
@@ -76,24 +65,13 @@ export async function updateReservation(id: number, prevState: State,
   const amountInCents = amount*100;
   
   try{
-    console.log("trying so hard to edit record!")
-    // const response = await prisma.reservation.update({
-    //     where: {id: id},
-    //     data:{
-    //       amount: amountInCents,
-    //       paid: paid,
-    //       customerName: customerName,
-    //       childNames: childNames,
-    //       email: email,
-    //       notes: notes,
-    //       schedule: { connect: { id: schedule } }
-    //     }
-    // });
+    // console.log("trying so hard to edit record!")
     const response = await prisma.reservation.update({
       where: { id: id }, // Specify the ID of the reservation you want to update
       data: {
         email: email,
         customerName: customerName,
+        updatedAt: new Date(),
         childNames: childNames,
         amount: amountInCents,
         paid: paid,
@@ -147,4 +125,20 @@ export async function createReservation(prevState: State, formData: FormData){
 
     // Test it out:
     //   console.log(rawFormData);
+}
+
+export async function deleteReservation(id:string){
+
+  try{
+    const response = await prisma.reservation.delete({
+      where: {
+        id:+id,
+      },
+    })
+  } catch(e){
+    console.log(e);
+  }
+  revalidatePath('/dashboard/reservations');
+  redirect('/dashboard/reservations');
+
 }
