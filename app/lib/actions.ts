@@ -82,8 +82,9 @@ export async function updateReservation(id: number, prevState: State,
     console.log("tried to update record:", response);
   }
   catch(err){
+    console.log(err);
     return {
-      message: "database error, updating the invoice didn't work.",
+      message: "Updating the invoice didn't work.",
     };
   }
   
@@ -104,30 +105,37 @@ export async function createReservation(prevState: State, formData: FormData){
       console.log(schedule);
       const amountInCents = amount * 100;
       const date = new Date().toISOString();
-      await prisma.reservation.create({
-        data:{
-            createdAt: date,
-            email: email,
-            customerName: customerName,
-            childNames: childNames,
-            amount: amountInCents,
-            notes: notes,
-            schedule: {
-                connect: {
-                    id: schedule,
-                }
-            },  
-            paid: false,
-        }
-    })
+
+      try{
+        await prisma.reservation.create({
+          data:{
+              createdAt: date,
+              email: email,
+              customerName: customerName,
+              childNames: childNames,
+              amount: amountInCents,
+              notes: notes,
+              schedule: {
+                  connect: {
+                      id: schedule,
+                  }
+              },  
+              paid: false,
+          }   
+        });
+      } catch(e) {
+        console.log(e);
+        return ({
+          message: "Couldn't create a new reservation! Sorry bro :/."
+        })
+      }
     revalidatePath('/dashboard/reservations');
     redirect('/dashboard/reservations');
-
-    // Test it out:
-    //   console.log(rawFormData);
 }
 
 export async function deleteReservation(id:string){
+  throw new Error('Failed to Delete resrvation');
+
 
   try{
     const response = await prisma.reservation.delete({
@@ -137,6 +145,9 @@ export async function deleteReservation(id:string){
     })
   } catch(e){
     console.log(e);
+    return {
+      message: "Can't delete reservation.",
+    }
   }
   revalidatePath('/dashboard/reservations');
   redirect('/dashboard/reservations');

@@ -196,6 +196,7 @@ export async function fetchReservationById(id: number){
             where:{ id: id },
         });
         reservation.amount = +reservation.amount/100;//type correction and turn pennies to dollars.
+        console.log(reservation);
         return reservation;
     } catch(e){
         console.log(e);

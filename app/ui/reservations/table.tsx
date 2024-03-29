@@ -10,7 +10,7 @@ export default async function ReservationsTable({
   query: string;
   currentPage: number;
 }) {
-  console.log("query as it comes into table.tsx:", query);
+  // console.log("query as it comes into table.tsx:", query);
   const reservations = await fetchFilteredReservations(query, currentPage);
   // const schedules = await fetchSchedules();
   // console.log(reservations);
