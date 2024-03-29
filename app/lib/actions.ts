@@ -10,10 +10,12 @@ const FormSchema = z.object({
     id: z.coerce.number(),
     createdAt: z.string(),
     updatedAt: z.string(),
-    customerName: z.string(),
-    childNames: z.string(),
+    customerName: z.string().min(1, {message: "Please enter a customer name"},),
+    childNames: z.string({
+      invalid_type_error: 'Please write a camper name.',
+    }),
     email: z.string(),
-    amount: z.coerce.number(),
+    amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
     notes: z.string(),
     scheduleId: z.coerce.number(),
     paid: z.coerce.boolean(),
@@ -93,8 +95,8 @@ export async function updateReservation(id: number, prevState: State,
 }
 
 export async function createReservation(prevState: State, formData: FormData){
-    // console.log("formData when creating a reservation:", formData);
-    const { customerName, childNames, email, amount, notes, schedule } = CreateReservation.parse({
+    
+    const validatedFields = CreateReservation.safeParse({
         customerName: formData.get('customerName'),
         childNames: formData.get('childName'),
         email: formData.get('email'),
@@ -102,9 +104,19 @@ export async function createReservation(prevState: State, formData: FormData){
         notes: formData.get('notes'),
         schedule: Number(formData.get('scheduleId')),
       });
+
+      if (!validatedFields.success) {
+        return {
+          errors: validatedFields.error.flatten().fieldErrors,
+          message: 'Missing Fields. Failed to Create Reservation.',
+        };
+      }
+      const { customerName, childNames, email, amount, notes, schedule } = validatedFields;
+      
       console.log(schedule);
       const amountInCents = amount * 100;
       const date = new Date().toISOString();
+
 
       try{
         await prisma.reservation.create({
