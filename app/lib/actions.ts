@@ -1,8 +1,8 @@
 'use server';
 import {z} from 'zod';
-import { PrismaClient } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -10,11 +10,9 @@ const FormSchema = z.object({
     id: z.coerce.number(),
     createdAt: z.string(),
     updatedAt: z.string(),
-    customerName: z.string().min(1, {message: "Please enter a customer name"},),
-    childNames: z.string({
-      invalid_type_error: 'Please write a camper name.',
-    }),
-    email: z.string(),
+    customerName: z.string().min(1, {message: "Please enter a gaurdian name"}),
+    childNames: z.string().min(1, {message: 'Please write a camper name.'}),
+    email: z.string().email(),
     amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
     notes: z.string(),
     scheduleId: z.coerce.number(),
@@ -55,6 +53,7 @@ export async function updateReservation(id: number, prevState: State,
     scheduleId: formData.get('scheduleId'),
     paid: formData.get('paid'),
   });
+
 
   // if (!validatedFields.success){
   //   return {
@@ -98,7 +97,7 @@ export async function createReservation(prevState: State, formData: FormData){
     
     const validatedFields = CreateReservation.safeParse({
         customerName: formData.get('customerName'),
-        childNames: formData.get('childName'),
+        childNames: formData.get('childNames'),
         email: formData.get('email'),
         amount: formData.get('amount'),
         notes: formData.get('notes'),
@@ -113,7 +112,7 @@ export async function createReservation(prevState: State, formData: FormData){
       }
       const { customerName, childNames, email, amount, notes, schedule } = validatedFields;
       
-      console.log(schedule);
+      // console.log(schedule);
       const amountInCents = amount * 100;
       const date = new Date().toISOString();
 
