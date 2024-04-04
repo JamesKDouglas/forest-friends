@@ -15,7 +15,11 @@ const FormSchema = z.object({
     email: z.string().email(),
     amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
     notes: z.string(),
-    scheduleId: z.coerce.number(),
+    schedule: z.coerce.number(
+      {
+        invalid_type_error: 'Please select a schedule.',
+      }  
+    ),
     paid: z.coerce.boolean(),
   });
 
@@ -41,51 +45,48 @@ export async function updateReservation(id: number, prevState: State,
   formData: FormData,
 ) {
 
-  // console.log("formData from edit reservation. customerName:", formData.get('scheduleId'));
-  console.log("submit form to edit record!")
-  const { customerName, childNames, email, amount, notes, scheduleId, paid } = UpdateReservation.parse({
-    id: formData.get("id"),
+  const validatedFields = UpdateReservation.safeParse({
+    id: id,
     customerName: formData.get('customerName'),
     childNames: formData.get('childNames'),
     email: formData.get('email'),
     amount: formData.get('amount'),
     notes: formData.get('notes'),
-    scheduleId: formData.get('scheduleId'),
+    schedule: Number(formData.get('scheduleId')),
     paid: formData.get('paid'),
   });
 
-
-  // if (!validatedFields.success){
-  //   return {
-  //     errors: validatedFields.error.flatten().fieldErrors,
-  //     message: "Missing Fields. Failed to Update Reservation."
-  //   }
-  // }
-
-  // const { customerName, amount, paid } = validatedFields.data;
+  console.log("validated fields: ", validatedFields);
+  if (!validatedFields.success){
+    console.log(validatedFields.error.flatten().fieldErrors);
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Update Reservation."
+    }
+  }
+  const { customerName, childNames, email, amount, notes, schedule, paid } = validatedFields.data;
+  
   const amountInCents = amount*100;
   
   try{
-    // console.log("trying so hard to edit record!")
     const response = await prisma.reservation.update({
-      where: { id: id }, // Specify the ID of the reservation you want to update
+      where: { id: id }, 
       data: {
         email: email,
         customerName: customerName,
         updatedAt: new Date(),
         childNames: childNames,
         amount: amountInCents,
-        paid: paid,
         notes: notes,
-        schedule: { connect: { id: scheduleId } } // Connect to the new schedule by its ID
+        schedule: { connect: { id: schedule } },
+        paid: paid
       }
     });
-    console.log("tried to update record:", response);
   }
   catch(err){
     console.log(err);
     return {
-      message: "Updating the invoice didn't work.",
+      message: "Updating the reservation didn't work.",
     };
   }
   
@@ -110,9 +111,8 @@ export async function createReservation(prevState: State, formData: FormData){
           message: 'Missing Fields. Failed to Create Reservation.',
         };
       }
-      const { customerName, childNames, email, amount, notes, schedule } = validatedFields;
-      
-      // console.log(schedule);
+      const { customerName, childNames, email, amount, notes, schedule } = validatedFields.data;
+
       const amountInCents = amount * 100;
       const date = new Date().toISOString();
 
