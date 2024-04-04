@@ -13,14 +13,14 @@ const prisma = new PrismaClient();
 
 async function getUser(email: string): Promise<User | undefined> {
     try {
-      const user = await prisma.user.getUnique(
+      const user = await prisma.user.findMany(
         {
             where:{email:email},
         }
       );
       console.log(user);
 
-      return user.rows[0];
+      return user[0];
     } catch (error) {
       console.error('Failed to fetch user:', error);
       throw new Error('Failed to fetch user.');
