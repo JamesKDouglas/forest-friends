@@ -160,8 +160,18 @@ function test(){
 };
 // test();
 
+const users = [
+  {
+    //There does need to be an id but I just autoincrement
+    name: 'User',
+    email: 'user@nextmail.com',
+    password: '123456',
+  },
+];
+
 module.exports = {
   reservations,
   expectedAttendance,
   schedules,
+  users,
 };

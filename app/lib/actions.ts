@@ -4,6 +4,10 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
 
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
+
+
 const prisma = new PrismaClient();
 
 const FormSchema = z.object({
@@ -145,9 +149,7 @@ export async function createReservation(prevState: State, formData: FormData){
 }
 
 export async function deleteReservation(id:string){
-  throw new Error('Failed to Delete resrvation');
-
-
+  // throw new Error('Failed to Delete resrvation');
   try{
     const response = await prisma.reservation.delete({
       where: {
@@ -163,4 +165,23 @@ export async function deleteReservation(id:string){
   revalidatePath('/dashboard/reservations');
   redirect('/dashboard/reservations');
 
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
 }

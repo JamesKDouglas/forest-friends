@@ -38,3 +38,10 @@ model Schedule {
   // Define the reverse relation to Reservation
   reservations Reservation[]//All reservations that are in this schedule.
 }
+
+model User {
+ id         Int          @id @default(autoincrement())
+ name       String       
+ email      String
+ password   String
+}

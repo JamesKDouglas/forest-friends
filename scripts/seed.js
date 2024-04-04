@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const {
     reservations,
     schedules,
+    users,
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
 
@@ -56,6 +57,7 @@ async function updateSchedules(prisma){
   }
 }
 async function seedSchedules(prisma) {
+  
   try {
     await prisma.schedule.createMany({
         data: schedules,
@@ -69,14 +71,39 @@ async function seedSchedules(prisma) {
   }
 }
 
+async function seedUsers(prisma){
+  console.log("seeding users")
+  try {const insertedUsers = await Promise.all(
+    users.map(async (user) => {
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      return prisma.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          password: hashedPassword,
+        },
+      });
+    }),
+  );
+
+  console.log(`database response after putting in users:`, insertedUsers);
+    
+  } catch (error) {
+    console.error('Error seeding users:', error);
+    throw error;
+  }
+}
+
 const prisma = new PrismaClient();
 
 async function main() {  
     // await deleteSchedules(prisma);
     // await seedSchedules(prisma);
     // await seedReservations(prisma);
-    console.log('about to run the update schedules thingy');
-    await updateSchedules(prisma);
+    console.log('about to run the user insertion thingy');
+
+    // await updateSchedules(prisma);
+    await seedUsers(prisma);
 }
 
 async function nada(){
