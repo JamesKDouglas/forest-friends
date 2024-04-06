@@ -2,7 +2,7 @@ import Breadcrumbs from '@/app/ui/reservations/breadcrumbs';
 import Form from '@/app/ui/reservations/edit-form';
 import { fetchReservationById, fetchSchedules } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
-import { MetaData } from 'next';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: "Edit Reservation",
