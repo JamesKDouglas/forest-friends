@@ -4,7 +4,7 @@ import { fetchReservationById, fetchSchedules } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 import { MetaData } from 'next';
 
-export const metadata: MetaData = {
+export const metadata: Metadata = {
   title: "Edit Reservation",
 };
 

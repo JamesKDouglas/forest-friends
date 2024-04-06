@@ -2,9 +2,9 @@ import Form from '@/app/ui/reservations/create-form';
 import Breadcrumbs from '@/app/ui/reservations/breadcrumbs';
 // import { fetchCustomers } from '@/app/lib/data';
 import { fetchSchedules } from '@/app/lib/data';
-import { MetaData } from 'next';
+import { Metadata } from 'next';
 
-export const metadata: MetaData = {
+export const metadata: Metadata = {
   title: "Create Reservation",
 };
 

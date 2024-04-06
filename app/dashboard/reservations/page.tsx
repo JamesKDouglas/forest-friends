@@ -6,9 +6,9 @@ import { lusitana } from '@/app/ui/fonts';
 import { ReservationsTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { fetchReservationsPages } from '@/app/lib/data';
-import { MetaData } from 'next';
+import { Metadata } from 'next';
 
-export const metadata: MetaData = {
+export const metadata: Metadata = {
   title: "Reservations",
 };
 
