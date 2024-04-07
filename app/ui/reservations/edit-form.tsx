@@ -18,8 +18,12 @@ export default function Form({
   schedules 
 }: {
   reservation: Reservation; 
-  schedules: Schedules[];
+  schedules: Schedules;
 }) {
+
+  console.log("schedules: ", schedules);
+  console.log("reservation.scheduledId: ", reservation.scheduleId);
+  console.log("populate schedules drop down with:", schedules[reservation.scheduleId-1].desc);
   const initialState = { message: null, errors: {}};
   const updateReservationWithId = updateReservation.bind(null, reservation.id);
   const [ state, dispatch ] = useFormState(updateReservationWithId, initialState);
@@ -131,7 +135,7 @@ export default function Form({
               id="schedule"
               name="scheduleId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 pr-8 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={schedules[reservation.scheduleId-1].desc}
+              defaultValue={reservation.scheduleId}
               aria-describedby="customer-error"
             >
               <option value="" disabled>
@@ -277,6 +281,6 @@ export default function Form({
         <Button type="submit">Edit Reservation</Button>
       </div>
     </form>
-    </>
+  </>
   
 }
