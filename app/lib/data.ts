@@ -1,7 +1,8 @@
 // I'm rewriting this to use Prisma. It used to use Vercel's sql function.
 //This page has all the functions responsible for interacting with the database. 
 
-import type { Schedule, Reservation } from '@prisma/client';
+import type { Schedule, Reservation } from '@prisma/client';//Reservations is a type defined in definitons.ts. Can I import this from the Prisma client?
+import type { LatestReservations } from '@/app/lib/definitions'
 import { PrismaClient } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -9,12 +10,12 @@ const { expectedAttendance } = require('@/app/lib/placeholder-data.js');
 const prisma = new PrismaClient();
 const ITEMS_PER_PAGE = 6;
 
-export async function getReservations(){
-    noStore();
-    const allRes = await prisma.reservations.findMany();
-    // console.log(allRes);
-    return allRes;
-}
+// export async function getReservations(){
+//     noStore();
+//     const allRes = await prisma.reservation.findMany();
+//     // console.log(allRes);
+//     return allRes;
+// }
 
 export async function fetchReservationsPages(query: string){
     noStore();
@@ -43,7 +44,9 @@ export async function fetchReservationsPages(query: string){
             });
         }
         console.log("count of records found:", count);
+        // let totalPages = 0;//I'm getting a typeerror stating that this is undefined? Well, I'll define it here then to make a default.
         const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+        console.log(typeof(totalPages));
         return totalPages;
     } catch(e){
         console.log(e);
@@ -149,7 +152,7 @@ export async function fetchFilteredReservations(
     try{
         // If I type in '100' in the search it better return all invoices that are $100, right?
         //Then I need to handle the typing.
-        let data = ""; 
+        let data: LatestReservations; //This is just an array of reservations - whether it's the latest or all of them!
         if (/^\d+$/.test(query)){
             //This just searches for the exact value of course. I'm starting to get into like if someone types in 1, should that search for invoice of value 100 or 201? Idk it's an edge case.
             let queryNum = +query;

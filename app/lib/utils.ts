@@ -36,9 +36,12 @@ export const generateYAxis = (attendance: Attendance[]) => {
   return { yAxisLabels, topLabel };
 };
 
-export const generatePagination = (currentPage: number, totalPages: number) => {
+export const generatePagination = (currentPage: number, totalPages: number | undefined) => {
   // If the total number of pages is 7 or less,
   // display all pages without any ellipsis.
+  if (!totalPages){
+    totalPages = 0;//I'm working around a typescript error where there is a complaint that this could be undefined. Is this the right way to handle that?
+  }
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }

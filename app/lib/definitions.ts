@@ -2,6 +2,8 @@
 // Primary types come from the Prisma object/client now, and are imported using that. 
 // Of course they are defined originally in the Prisma schema.
 
+import { prisma } from '@prisma/client';
+
 //However, there are other types that we use in the app - derived types. For example there is no customer data type. So if we want to show a list of customers it's derived from the reservations data.
 
 export type Customer = {
@@ -33,12 +35,12 @@ export type User = {
 
 export type Reservation = {
   id: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   email: string;
   customerName: string;
   childNames: string;
-  amount: number;
+  amount: prisma.Decimal;
   paid: true | false; 
   notes: string;
   scheduleId: number;
@@ -50,8 +52,8 @@ export type Schedule = {
   id:number,
   name: string;
   desc: string;
-  startList:[Date, Date],//This is how you declare a type of array of dates - just more than one.
-  endList:[Date, Date],
+  startList: Date[],//I thought you declared this as [Date, Date], but apparently not. I want an array of dates.
+  endList: Date[],
 }
 
 export type Schedules = Array<Schedule>;
