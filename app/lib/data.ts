@@ -198,8 +198,12 @@ export async function fetchReservationById(id: number){
         const reservation = await prisma.reservation.findUnique({
             where:{ id: id },
         });
-        reservation.amount = +reservation.amount/100;//type correction and turn pennies to dollars.
-        console.log(reservation);
+
+        if (!reservation){
+            throw new Error("No reservations returned from the database?!?")
+        }
+//I want to convert reservation.amount from pennies to dollars but Typescript will have none of that.
+//Some problem with Decimal type?
         return reservation;
     } catch(e){
         console.log(e);
@@ -273,15 +277,16 @@ export async function fetchCardData(){
 
 }
 
-export async function updateSchedule(id: number, newScheduleData: Schedule){
-    noStore();
-    const schedule = await prisma.schedule.update({
-        where: { id: id },
-        data: {newScheduleData},
-    })
+// export async function updateSchedule(id: number, newScheduleData: Schedule){
+//     noStore();
+//     console.log(newScheduleData);
+//     const schedule = await prisma.schedule.update({
+//         where: { id: id },
+//         data: {newScheduleData},
+//     })
 
-    console.log("schedule updated!", schedule);
-}
+//     console.log("schedule updated!", schedule);
+// }
 
 export async function putReservation(newReservationData: Reservation){
     noStore();

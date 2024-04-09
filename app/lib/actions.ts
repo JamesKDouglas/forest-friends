@@ -27,8 +27,9 @@ const FormSchema = z.object({
     paid: z.coerce.boolean(),
   });
 
-const CreateReservation = FormSchema.omit({ id: true, createdAt: true, updatedAt: true, paid:true});
+const CreateReservation = FormSchema.omit({ id: true, createdAt: true, updatedAt: true});
 
+//The State is the state of the HTML page which is why everything is a string at this point.
 export type State = {
   errors?: {
     id: string[];
@@ -107,6 +108,7 @@ export async function createReservation(prevState: State, formData: FormData){
         amount: formData.get('amount'),
         notes: formData.get('notes'),
         schedule: Number(formData.get('scheduleId')),
+        paid: formData.get('paid'),
       });
 
       if (!validatedFields.success) {
@@ -115,11 +117,11 @@ export async function createReservation(prevState: State, formData: FormData){
           message: 'Missing Fields. Failed to Create Reservation.',
         };
       }
-      const { customerName, childNames, email, amount, notes, schedule } = validatedFields.data;
+      const { customerName, childNames, email, amount, notes, schedule, paid } = validatedFields.data;
 
       const amountInCents = amount * 100;
       const date = new Date().toISOString();
-
+      console.log("paid status from making reservation:", paid);
 
       try{
         await prisma.reservation.create({
@@ -135,7 +137,7 @@ export async function createReservation(prevState: State, formData: FormData){
                       id: schedule,
                   }
               },  
-              paid: false,
+              paid: paid,
           }   
         });
       } catch(e) {
