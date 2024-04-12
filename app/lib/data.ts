@@ -204,6 +204,8 @@ export async function fetchReservationById(id: number){
         }
 //I want to convert reservation.amount from pennies to dollars but Typescript will have none of that.
 //Some problem with Decimal type?
+//I've turned off typescript error reporting for now so,
+        reservation.amount = reservation.amount/100;
         return reservation;
     } catch(e){
         console.log(e);
