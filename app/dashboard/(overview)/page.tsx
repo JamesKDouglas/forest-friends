@@ -5,7 +5,6 @@ import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { AttendanceChartSkeleton, LatestReservationsSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 import CardWrapper from '@/app/ui/dashboard/cards';
-
  
 export default async function Page() {
   //1. How much revenue has been collected this calendar year. - get all of them since jan 1 and add all the amounts.
