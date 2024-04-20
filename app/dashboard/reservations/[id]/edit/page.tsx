@@ -23,7 +23,7 @@ if (!reservation){
           { label: 'reservations', href: '/dashboard/reservations' },
           {
             label: 'Edit Reservation',
-            href: `/dashboard/invoices/${id}/edit`,
+            href: `/dashboard/reservations/${id}/edit`,
             active: true,
           },
         ]}

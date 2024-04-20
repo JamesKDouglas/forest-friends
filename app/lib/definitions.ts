@@ -52,15 +52,24 @@ export type Schedule = {
   id:number,
   name: string;
   desc: string;
-  startList: Date[],//I thought you declared this as [Date, Date], but apparently not. I want an array of dates.
-  endList: Date[],
+  startList: Date[];//I thought you declared this as [Date, Date], but apparently not. I want an array of dates.
+  endList: Date[];
 }
 
 export type Schedules = Array<Schedule>;
-// The database returns a number for amount, but we later format it to a string with the formatCurrency function
-// export type LatestReservationRaw = Omit<LatestReservation, 'amount'> & {
-//   amount: number;
-// };
+
+//This table lists already made schedules and summarizes them. The user can click on them to find out more.
+export type SchedulesTableType = {
+  id: number;
+  desc: string;
+  startDay: Date;
+  endDay: Date;
+}
+
+//if I'm going to have some sort of view that lists stats about the camp schedules,
+// total_days: number;
+// total_reservations: number;
+// total_paid: number;
 
 // export type ReservationsTable = {
 //   id: string;
@@ -70,28 +79,6 @@ export type Schedules = Array<Schedule>;
 //   status: 'pending' | 'paid';
 //   campTime: Array<[string, string, string]>
 //   amount: number;
-// };
-
-// export type CustomersTableType = {
-//   id: string;
-//   name: string;
-//   email: string;
-//   phone: string;
-//   childNames: Array<[string]>;
-//   total_reservations: number;
-//   total_pending: number;
-//   total_paid: number;
-// };
-
-// export type FormattedCustomersTable = {
-//   id: string;
-//   name: string;
-//   email: string;
-//   phone: string;
-//   childNames: Array<[string]>
-//   total_reservations: number;
-//   total_pending: string;
-//   total_paid: string;
 // };
 
 // export type FormattedReservationsTable = {
@@ -104,12 +91,6 @@ export type Schedules = Array<Schedule>;
 //   total_pending: string;
 //   total_paid: string;
 // };
-
-// export type Customer = {
-//   name: string;
-// };
-
-
 
 // export type ReservationForm = {
 //   id: string;

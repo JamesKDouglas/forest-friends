@@ -169,6 +169,92 @@ export async function deleteReservation(id:string){
 
 }
 
+export async function deleteSchedule(id:string){
+  // throw new Error('Failed to Delete schedule');
+  try{
+    const response = await prisma.schedule.delete({
+      where: {
+        id:+id,
+      },
+    })
+  } catch(e){
+    console.log(e);
+    return {
+      message: "Can't delete schedule.",
+    }
+  }
+  revalidatePath('/dashboard/schedules');
+  redirect('/dashboard/schedules');
+
+}
+
+const FormSchemaSchedule = z.object({
+  id: z.coerce.number(),
+  name: z.string().min(1, {message: "Please enter a schedule name"}),
+  desc: z.string().min(1, {message: "Please enter a description"}),
+  startList: z.array(Date),
+  endList: z.array(Date),
+});
+
+const UpdateSchedule = FormSchemaSchedule.omit({});
+
+export type StateUpdateSched = {
+  errors?: {
+    id: string[];
+    name?: string[];
+    desc?: string[];
+    startList?: Date[];
+    endList?: Date[];
+  };
+  message?: string | null;
+};
+
+export async function updateSchedule(id: number, prevState: StateUpdateSched,
+  formData: FormData,
+) {
+
+  //The startList and endList are arrays of Date objects. Can I even keep this in a FormData type?
+  const validatedFields = UpdateSchedule.safeParse({
+    id: id,
+    name: formData.get('name'),
+    desc: formData.get('desc'),
+    startList: formData.get('startList'),
+    endList: formData.get('endList'),
+  });
+
+  console.log("validated fields: ", validatedFields);
+  if (!validatedFields.success){
+    console.log(validatedFields.error.flatten().fieldErrors);
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Update Schedule."
+    }
+  }
+  const { name, desc, startList, endList } = validatedFields.data;
+  
+  try{
+    const response = await prisma.schedule.update({
+      where: { id: id }, 
+      data: {
+        name: name,
+        desc: desc,
+        startList: startList,
+        endList: endList,
+      }
+    });
+  }
+  catch(err){
+    console.log(err);
+    return {
+      message: "Updating the schedule didn't work.",
+    };
+  }
+  
+  revalidatePath('/dashboard/schedules');
+  redirect('/dashboard/schedules');
+}
+
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,

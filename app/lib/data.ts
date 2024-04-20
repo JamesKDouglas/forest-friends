@@ -2,7 +2,7 @@
 //This page has all the functions responsible for interacting with the database. 
 
 import type { Schedule, Reservation } from '@prisma/client';//Reservations is a type defined in definitons.ts. Can I import this from the Prisma client?
-import type { LatestReservations } from '@/app/lib/definitions'
+import type { LatestReservations, Schedules } from '@/app/lib/definitions'
 import { PrismaClient } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -19,8 +19,6 @@ const ITEMS_PER_PAGE = 6;
 
 export async function fetchReservationsPages(query: string){
     noStore();
-
-
     try{
         let count = 0; 
         if (/^\d+$/.test(query)){
@@ -130,10 +128,48 @@ export async function fetchSchedules(){
     return allSchedules;
 }
 
-//I want to have some sort of search page to browse the reservations. This handles that.
+export async function fetchScheduleById(id:string){
+    let idNum = Number(id);
+    const schedule = await prisma.schedule.findUnique({
+        where: {id:idNum},
+    })
+    return schedule;
+}
 
-//Can I use prisma to do some sort of filtered fetch? Anyways I want to use try catch blocks.
-// https://www.prisma.io/docs/orm/prisma-client/debugging-and-troubleshooting/handling-exceptions-and-errors
+export async function fetchFilteredSchedules(
+    query: string, 
+    currentPage:number,){
+
+    noStore();
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    try{
+        let data: Schedules; 
+        
+        data = await prisma.schedule.findMany({
+            skip: offset,
+            take: ITEMS_PER_PAGE,
+            orderBy: [
+                {
+                    id: 'desc',
+                }
+            ],
+            where: {
+                OR: [
+                    {desc: { contains: query, mode: 'insensitive' }},
+                    {name: { contains: query, mode: 'insensitive' }},
+                    // {startList: { contains: query, mode: 'insensitive' }},
+                    // {endList: { contains: query, mode: 'insensitive' }},
+                ]
+            }
+        });
+        
+        // console.log(data);
+        return data;
+    } catch (e){
+        console.log(e);
+    }    
+}
 
 export async function fetchFilteredReservations(
     query: string, 
@@ -142,13 +178,6 @@ export async function fetchFilteredReservations(
     noStore();
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-    //The old sql query was,
-    // customers.name ILIKE ${`%${query}%`} OR
-    // customers.email ILIKE ${`%${query}%`} OR
-    // invoices.amount::text ILIKE ${`%${query}%`} OR
-    // invoices.date::text ILIKE ${`%${query}%`} OR
-    // invoices.status ILIKE ${`%${query}%`}
-    // console.log("query inside fetchFilteredReservations:", query);
     try{
         // If I type in '100' in the search it better return all invoices that are $100, right?
         //Then I need to handle the typing.
@@ -190,6 +219,32 @@ export async function fetchFilteredReservations(
     } catch (e){
         console.log(e);
     }    
+}
+
+export async function fetchSchedulesPages(query: string){
+    noStore();
+    try{
+        let count = 0; 
+        count = await prisma.schedule.count({
+            where: {
+                OR: [
+                    {desc: { contains: query, mode: 'insensitive' }},
+                    {name: { contains: query, mode: 'insensitive' }},
+                    // {startList: { contains: query, mode: 'insensitive' }},
+                    // {endList: { contains: query, mode: 'insensitive' }},
+                ]
+            }
+        });
+        
+        console.log("count of schedules found:", count);
+        // let totalPages = 0;//I'm getting a typeerror stating that this is undefined? Well, I'll define it here then to make a default.
+        const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+        console.log(typeof(totalPages));
+        return totalPages;
+    } catch(e){
+        console.log(e);
+    }
+
 }
 
 export async function fetchReservationById(id: number){
