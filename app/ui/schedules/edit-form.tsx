@@ -3,13 +3,11 @@
 import { Schedule } from '@/app/lib/definitions';
 import {
   CheckIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
-import ScheduleTableParent from '@/app/ui/schedules/scheduleTableParent';
+import ScheduleMaker from '@/app/ui/schedules/scheduleMaker';
 import { useFormState } from 'react-dom';
 import { updateSchedule } from '@/app/lib/actions';
 
@@ -21,6 +19,7 @@ export default function Form({
 
   const initialState  = {message: null, errors:{}};
   const updateScheduleById = updateSchedule.bind(null, schedule.id);
+
   return (
     <form>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
@@ -76,9 +75,10 @@ export default function Form({
 
         {/* Current Schedule 
         */}
-        <ScheduleTableParent/>
+        <ScheduleMaker schedule = {schedule}/>
         
       </div>
+      
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/dashboard/schedules"

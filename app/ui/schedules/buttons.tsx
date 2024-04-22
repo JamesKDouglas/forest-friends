@@ -2,6 +2,16 @@ import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { deleteSchedule } from '@/app/lib/actions';
 
+export function DeleteSession(id, sessions){
+  //delete the session with id id from the sessions array and send the modified array back
+
+}
+export function DuplicateSessionTomorrow(id, sessions){
+  //duplicate the session with id id except change start and end dates to the next day on the duplicate.
+    
+}
+
+
 export function CreateSchedule() {
   return (
     <Link
