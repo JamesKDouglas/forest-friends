@@ -33,10 +33,29 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
         setValue2(newValue); 
     } 
 
-    const makeNewSession = (event) => {
-        console.log(event);
-        // console.log("new session! Start:", value1, " end: ", value2);
+    const [time1, setTime1] = useState({ 
+        startDate: null, 
+        endDate: null
+    }); 
 
+    const [time2, setTime2] = useState({ 
+        startDate: null, 
+        endDate: null 
+    }); 
+        
+    const handleTimeChange1 = (newValue) => {
+        console.log("newValue:", newValue); 
+        setTime1(newValue); 
+    }
+
+    const handleTimeChange2 = (newValue) => {
+        console.log("newValue:", newValue); 
+        setTime2(newValue); 
+    } 
+
+    const makeNewSession = () => {
+        console.log("new session! Days Start:", value1, " end: ", value2);
+        console.log("times: ", time1, "end ", time2);
     }
      
     return(
@@ -53,8 +72,10 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
                         onChange={handleValueChange1} 
                     /> 
                     {/* <label for="start">Camper start time</label> */}
+
+                    {/* This isn't a react component so I can't keep state with it. There must be some time input component for React I can download? Also, it's weird to keep 4 variables for state. How can I combine them into one hook? */}
                     <input className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    type="time" id="start" name="start" required />
+                    type="time" id="start" name="start" required onChange={handleTimeChange1} />
                 </div>
 
                 <div className="sm:col-span-3">
@@ -68,12 +89,12 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
 
                     {/* <label for="end">Camper end time</label> */}
                     <input className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    type="time" id="end" name="end" required />
+                    type="time" id="end" name="end" required onChange={handleTimeChange2}  />
                 </div>
             </div>
             
             {/* Enclose the two date/time pickers in a form and this button submits the form, which dispatches the state */}
-            <Button type = "submit" className="mt-4 w-full">
+            <Button onClick = {makeNewSession} className="mt-4 w-full">
                 Add Session<ArrowDownIcon className="ml-auto h-5 w-5 text-gray-50" />
             </Button>
             {/* This table displays the prepared schedule and lets you delete or duplicate sessions */}
