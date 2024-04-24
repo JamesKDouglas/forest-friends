@@ -4,7 +4,7 @@
 // -a table that shows the current situation, listing all the sessions in a table and having a delete button in addition to 3 duplicate buttons. 
 'use client'
 import { Schedule } from '@/app/lib/definitions';
-// import ScheduleTable from '@/app/ui/schedules/scheduleTable';
+import ScheduleTable from '@/app/ui/schedules/scheduleTable';
 import React, {useState} from "react"; 
 import Datepicker from "react-tailwindcss-datepicker"; 
 import { Button } from '@/app/ui/button';
@@ -13,6 +13,7 @@ import { ArrowDownIcon } from '@heroicons/react/20/solid';
 
 export default function ScheduleMaker({schedule}:{schedule:Schedule}){
 
+    //state for choosing dates for a session
     const [value1, setValue1] = useState({ 
         startDate: null, 
         endDate: null
@@ -34,14 +35,23 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
     } 
 
     const [time1, setTime1] = useState({ 
-        startDate: null, 
-        endDate: null
+        time: null,
     }); 
 
     const [time2, setTime2] = useState({ 
-        startDate: null, 
-        endDate: null 
+        time: null,
     }); 
+
+    //state for sessions list
+    let sessionsInitial = [];
+    for (let i=0;i<schedule.startList.length;i++){
+        sessionsInitial.push([i, schedule.startList[i], schedule.endList[i]]);
+    }
+
+    const initialStateSessions = sessionsInitial;
+    const [sessions, setSessions] = useState({
+        initialStateSessions
+    });
         
     const handleTimeChange1 = (newValue) => {
         console.log("newValue:", newValue); 
@@ -55,7 +65,7 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
 
     const makeNewSession = () => {
         console.log("new session! Days Start:", value1, " end: ", value2);
-        console.log("times: ", time1, "end ", time2);
+        console.log("times: ", time1.time, "end ", time2.time);
     }
      
     return(
@@ -98,8 +108,9 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
                 Add Session<ArrowDownIcon className="ml-auto h-5 w-5 text-gray-50" />
             </Button>
             {/* This table displays the prepared schedule and lets you delete or duplicate sessions */}
-            {/* <ScheduleTable/> */}
+            <ScheduleTable scheduleNow = {schedule}/>
         {/* </form> */}
+
         </>
     )
 }
