@@ -10,80 +10,94 @@ import Datepicker from "react-tailwindcss-datepicker";
 import { Button } from '@/app/ui/button';
 import { ArrowDownIcon } from '@heroicons/react/20/solid';
 
-
 export default function ScheduleMaker({schedule}:{schedule:Schedule}){
 
     //state for choosing dates for a session
-    const [value1, setValue1] = useState({ 
+    const [day1, setDay1] = useState({ 
         startDate: null, 
         endDate: null
     }); 
 
-    const [value2, setValue2] = useState({ 
+    const [day2, setDay2] = useState({ 
         startDate: null, 
         endDate: null 
     }); 
         
-    const handleValueChange1 = (newValue) => {
+    const handleDayChange1 = (newValue) => {
         console.log("newValue:", newValue); 
-        setValue1(newValue); 
+        setDay1(newValue); 
     }
 
-    const handleValueChange2 = (newValue) => {
+    const handleDayChange2 = (newValue) => {
         console.log("newValue:", newValue); 
-        setValue2(newValue); 
+        setDay2(newValue); 
     } 
 
-    const [time1, setTime1] = useState({ 
-        time: null,
-    }); 
+    const [time1, setTime1] = useState(""); 
 
-    const [time2, setTime2] = useState({ 
-        time: null,
-    }); 
+    const [time2, setTime2] = useState(""); 
+
+    const handleTimeChange1 = (e) => {
+        e.preventDefault();
+        console.log("Time1 incoming:", e.target.value); 
+        setTime1(e.target.value); 
+    }
+
+    const handleTimeChange2 = (e) => {
+        e.preventDefault();
+        console.log("Time2 incoming:", e.target.value); 
+        setTime2(e.target.value); 
+    } 
 
     //state for sessions list
-    let sessionsInitial = [];
-    for (let i=0;i<schedule.startList.length;i++){
-        sessionsInitial.push([i, schedule.startList[i], schedule.endList[i]]);
-    }
-
-    const initialStateSessions = sessionsInitial;
-    const [sessions, setSessions] = useState({
-        initialStateSessions
-    });
+    // let sessionsInitial = [];
+    // for (let i=0;i<schedule.startList.length;i++){
+    //     sessionsInitial.push([i, schedule.startList[i], schedule.endList[i]]);
+    // }
+    
+    // const initialStateSessions = sessionsInitial;
+    // const [sessions, setSessions] = useState({
+    //     initialStateSessions
+    // });
         
-    const handleTimeChange1 = (newValue) => {
-        console.log("newValue:", newValue); 
-        setTime1(newValue); 
-    }
 
-    const handleTimeChange2 = (newValue) => {
-        console.log("newValue:", newValue); 
-        setTime2(newValue); 
-    } 
+    const makeNewSession = (e) => {
+        e.preventDefault();
+        console.log("new session! Days Start:", day1, " end: ", day2);
+        console.log("times: ", time1, "end ", time2, typeof(time1));
+        console.log('schedule', typeof(schedule.endList[0]));
 
-    const makeNewSession = () => {
-        console.log("new session! Days Start:", value1, " end: ", value2);
-        console.log("times: ", time1.time, "end ", time2.time);
+        //I want to combine day1 and time1 into a date object
+        //Then append it to the startList. 
+        //And then sort that startlist in chronological order.
+        //The way the daypicker works is it outputs 2 days. It's set to single mode but it still just outputs the same day as the start and end. 
+        let newStart = new Date(`${day1.startDate}T${time1}:00`);
+        console.log("new start obj:", newStart);
+
+        //idk if it's before after or somewhere in the middle. Just add it to the end and sort.
+        schedule.startList.push(newStart);
+
+        //outputting to the console is fine. But sorting the array seems a lot harder than I thought it was going to be? All I want to do is replace the startList array with a sorted version. 
+        console.log(schedule.startList.sort((a,b) => a.getTime()-b.getTime()));
+
+        let newEnd = new Date(`${day2.startDate}T${time2}:00`);
+        console.log("new end obj:", newEnd);
+        
+
     }
      
     return(
         <>
-        {/* You can't put a form inside a form! So I have to just keep state and use an event handler */}
-        {/* <form onSubmit = {makeNewSession}> */}
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
                     {/* Start session (camper arrive) */}
                     <p>START</p>
                     <Datepicker 
                         asSingle={true}
-                        value={value1} 
-                        onChange={handleValueChange1} 
+                        value={day1} 
+                        onChange={handleDayChange1} 
                     /> 
-                    {/* <label for="start">Camper start time</label> */}
-
-                    {/* This isn't a react component so I can't keep state with it. There must be some time input component for React I can download? Also, it's weird to keep 4 variables for state. How can I combine them into one hook? */}
+                    
                     <input className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     type="time" id="start" name="start" required onChange={handleTimeChange1} />
                 </div>
@@ -93,8 +107,8 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
                     <p>END</p>
                     <Datepicker 
                         asSingle={true}
-                        value={value2} 
-                        onChange={handleValueChange2} 
+                        value={day2} 
+                        onChange={handleDayChange2} 
                     /> 
 
                     {/* <label for="end">Camper end time</label> */}
@@ -103,7 +117,6 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
                 </div>
             </div>
             
-            {/* Enclose the two date/time pickers in a form and this button submits the form, which dispatches the state */}
             <Button onClick = {makeNewSession} className="mt-4 w-full">
                 Add Session<ArrowDownIcon className="ml-auto h-5 w-5 text-gray-50" />
             </Button>
