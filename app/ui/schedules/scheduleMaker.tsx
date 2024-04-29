@@ -10,8 +10,11 @@ import Datepicker from "react-tailwindcss-datepicker";
 import { Button } from '@/app/ui/button';
 import { ArrowDownIcon } from '@heroicons/react/20/solid';
 
-export default function ScheduleMaker({schedule}:{schedule:Schedule}){
+//This accepts the whole object of a schedule it could be that if someone in the future modifies this to change the name here in this component. Now you have two copies of the data and it's confusing. So better not do that I guess. The other option is to destructure/pass on only what is required.
 
+export default function ScheduleMaker({ schedule } : {schedule:Schedule}){ 
+    console.log("Hello yes time to edit a schedule")
+    console.log(schedule);
     //state for choosing dates for a session
     const [day1, setDay1] = useState({ 
         startDate: null, 
@@ -24,12 +27,12 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
     }); 
         
     const handleDayChange1 = (newValue) => {
-        console.log("newValue:", newValue); 
+        console.log("Start Day:", newValue); 
         setDay1(newValue); 
     }
 
     const handleDayChange2 = (newValue) => {
-        console.log("newValue:", newValue); 
+        console.log("End Day:", newValue); 
         setDay2(newValue); 
     } 
 
@@ -39,33 +42,24 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
 
     const handleTimeChange1 = (e) => {
         e.preventDefault();
-        console.log("Time1 incoming:", e.target.value); 
+        console.log("Start time incoming:", e.target.value); 
         setTime1(e.target.value); 
     }
 
     const handleTimeChange2 = (e) => {
         e.preventDefault();
-        console.log("Time2 incoming:", e.target.value); 
+        console.log("End time incoming:", e.target.value); 
         setTime2(e.target.value); 
-    } 
+    }         
 
-    //state for sessions list
-    // let sessionsInitial = [];
-    // for (let i=0;i<schedule.startList.length;i++){
-    //     sessionsInitial.push([i, schedule.startList[i], schedule.endList[i]]);
-    // }
-    
-    // const initialStateSessions = sessionsInitial;
-    // const [sessions, setSessions] = useState({
-    //     initialStateSessions
-    // });
-        
-
+    //
+    // const [schedule, setSchedule] = useState({startList: startList, endList:endList});
+    console.log("trying to keep schedule as a state: ", schedule)
     const makeNewSession = (e) => {
         e.preventDefault();
-        console.log("new session! Days Start:", day1, " end: ", day2);
-        console.log("times: ", time1, "end ", time2, typeof(time1));
-        console.log('schedule', typeof(schedule.endList[0]));
+        console.log("New session! Days: start:", day1, " end: ", day2);
+        console.log("Times: start: ", time1, " end: ", time2);
+        console.log('schedule', schedule);
 
         //I want to combine day1 and time1 into a date object
         //Then append it to the startList. 
@@ -73,17 +67,34 @@ export default function ScheduleMaker({schedule}:{schedule:Schedule}){
         //The way the daypicker works is it outputs 2 days. It's set to single mode but it still just outputs the same day as the start and end. 
         let newStart = new Date(`${day1.startDate}T${time1}:00`);
         console.log("new start obj:", newStart);
-
-        //idk if it's before after or somewhere in the middle. Just add it to the end and sort.
-        schedule.startList.push(newStart);
-
-        //outputting to the console is fine. But sorting the array seems a lot harder than I thought it was going to be? All I want to do is replace the startList array with a sorted version. 
-        console.log(schedule.startList.sort((a,b) => a.getTime()-b.getTime()));
-
         let newEnd = new Date(`${day2.startDate}T${time2}:00`);
         console.log("new end obj:", newEnd);
-        
+        //Before we proceed - are these start and end times valid? They cannot exist in the middle of existing sessions.
 
+        for (let sess=0;sess<schedule.startList.length;sess++){
+            if (newStart.getTime()>schedule.startList[sess].getTime()&&newStart.getTime()<schedule.endList[sess].getTime()){
+                console.log("Start time is not valid. It's between the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
+                return;
+            }
+
+            if (newEnd.getTime()>schedule.startList[sess].getTime()&&newEnd.getTime()<schedule.endList[sess].getTime()){
+                console.log("End time is not valid. It's between the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
+                return;
+            }
+        }
+
+        //This seems a bit convoluted but I had some weird errors trying to do it more directly.
+        schedule.startList.push(newStart);
+        let sortedStartList = schedule.startList.sort((a,b) => a.getTime()-b.getTime())
+        schedule.startList = sortedStartList;
+        console.log(schedule.startList);
+
+        schedule.endList.push(newEnd);
+        let sortedEndList = schedule.endList.sort((a,b) => a.getTime()-b.getTime())
+        schedule.endList = sortedEndList;
+        console.log(schedule.endList);
+
+        return (schedule)
     }
      
     return(

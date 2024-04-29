@@ -2,7 +2,7 @@
  import { DeleteSession, DuplicateSessionTomorrow, DuplicateSessionNextWeek, DuplicateSessionNextMonth } from '@/app/ui/schedules/buttons'
 
  export default function ScheduleTable({scheduleNow}: {scheduleNow:Schedule}){
-
+  console.log("schedule passed to table:", scheduleNow);
     //Each row of the table will have a session. I could do that in the jsx or here.
     let sessions = [];
     for (let i=0;i<scheduleNow.startList.length;i++){
