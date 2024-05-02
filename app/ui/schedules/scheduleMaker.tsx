@@ -52,6 +52,7 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
         setTime2(e.target.value); 
     }         
 
+    const [currentSchedule, setCurrentSchedule] = useState(schedule);
     //
     // const [schedule, setSchedule] = useState({startList: startList, endList:endList});
     console.log("trying to keep schedule as a state: ", schedule)
@@ -72,15 +73,22 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
         //Before we proceed - are these start and end times valid? They cannot exist in the middle of existing sessions.
 
         for (let sess=0;sess<schedule.startList.length;sess++){
-            if (newStart.getTime()>schedule.startList[sess].getTime()&&newStart.getTime()<schedule.endList[sess].getTime()){
-                console.log("Start time is not valid. It's between the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
+            if (newStart.getTime()>=schedule.startList[sess].getTime()&&newStart.getTime()<=schedule.endList[sess].getTime()){
+                console.log("Start time is not valid. It's between or equal to the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
                 return;
             }
 
-            if (newEnd.getTime()>schedule.startList[sess].getTime()&&newEnd.getTime()<schedule.endList[sess].getTime()){
-                console.log("End time is not valid. It's between the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
+            if (newEnd.getTime()>=schedule.startList[sess].getTime()&&newEnd.getTime()<=schedule.endList[sess].getTime()){
+                console.log("End time is not valid. It's between or equal to the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
                 return;
             }
+
+            //I need another test to reject invalid times. Right now it's possible to make a session that totally includes another one!
+            if (newStart.getTime()<schedule.endList[sess] && newEnd.getTime()>schedule.startList[sess]){
+                console.log("The proposed new session totally includes another session! That's outrageous. You cannot. Absolutely no way. As a computer it is my job to enforce reason and order in this world! I can't allow that sort of thing, sorry. Maybe you should make a new schedule?");
+                return;
+            }
+
         }
 
         //This seems a bit convoluted but I had some weird errors trying to do it more directly.
@@ -94,7 +102,12 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
         schedule.endList = sortedEndList;
         console.log(schedule.endList);
 
-        return (schedule)
+        // return (schedule)
+        setCurrentSchedule({
+            ...schedule,
+            startList:schedule.startList,
+            endList:schedule.endList
+        });
     }
      
     return(
@@ -132,7 +145,7 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
                 Add Session<ArrowDownIcon className="ml-auto h-5 w-5 text-gray-50" />
             </Button>
             {/* This table displays the prepared schedule and lets you delete or duplicate sessions */}
-            <ScheduleTable scheduleNow = {schedule}/>
+            <ScheduleTable scheduleNow = {currentSchedule}/>
         {/* </form> */}
 
         </>

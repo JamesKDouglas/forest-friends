@@ -97,13 +97,13 @@ async function seedUsers(prisma){
 const prisma = new PrismaClient();
 
 async function main() {  
+    console.log("seeding schedules and reservations")
     // await deleteSchedules(prisma);
-    // await seedSchedules(prisma);
-    // await seedReservations(prisma);
-    console.log('about to run the user insertion thingy');
-
+    await seedSchedules(prisma);
+    await seedReservations(prisma);
+    // console.log('about to run the user insertion thingy');
     // await updateSchedules(prisma);
-    await seedUsers(prisma);
+    // await seedUsers(prisma);
 }
 
 async function nada(){
