@@ -92,21 +92,24 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
         }
 
         //This seems a bit convoluted but I had some weird errors trying to do it more directly.
-        schedule.startList.push(newStart);
-        let sortedStartList = schedule.startList.sort((a,b) => a.getTime()-b.getTime())
-        schedule.startList = sortedStartList;
-        console.log(schedule.startList);
 
-        schedule.endList.push(newEnd);
-        let sortedEndList = schedule.endList.sort((a,b) => a.getTime()-b.getTime())
-        schedule.endList = sortedEndList;
-        console.log(schedule.endList);
+        //similar to the old JSON.stringify then JSON.parse. structuredClone preserves types better.
+        let buildingSchedule = structuredClone(currentSchedule);
+        buildingSchedule.startList.push(newStart);
+        let sortedStartList = buildingSchedule.startList.sort((a,b) => a.getTime()-b.getTime())
+        buildingSchedule.startList = sortedStartList;
+        console.log(buildingSchedule.startList);
+
+        buildingSchedule.endList.push(newEnd);
+        let sortedEndList = buildingSchedule.endList.sort((a,b) => a.getTime()-b.getTime())
+        buildingSchedule.endList = sortedEndList;
+        console.log(buildingSchedule.endList);
 
         // return (schedule)
         setCurrentSchedule({
-            ...schedule,
-            startList:schedule.startList,
-            endList:schedule.endList
+            ...buildingSchedule,
+            startList:buildingSchedule.startList,
+            endList:buildingSchedule.endList
         });
     }
      
