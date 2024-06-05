@@ -66,7 +66,6 @@ export async function fetchLatestReservations(){
     // console.log("latestReservations:", latestRes);
     return latestRes;
 }
-// Get a list of expected attendance, either the next 7 months or the next 7 days ( including today ).
 
 export async function fetchAttendance(){
     // await new Promise((resolve)=>setTimeout(resolve, 3000));
