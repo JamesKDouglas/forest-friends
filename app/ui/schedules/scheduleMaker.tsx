@@ -55,43 +55,64 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
     }         
 
     const [currentSchedule, setCurrentSchedule] = useState(schedule);
-    //
-    // const [schedule, setSchedule] = useState({startList: startList, endList:endList});
-    console.log("trying to keep schedule as a state: ", schedule)
 
-    const makeNewSession = (e) => {
-        e.preventDefault();
+    const valSession = (newStart, newEnd) => {
+
+        // s start e end for session being inspected.
+        let s = 0;
+        let e = 0;        
+        //ps proposed start, pe proposed end.
+        let ps = 0;
+        let pe = 0;
+
+        let err = "";
+
+        for (let sess=0;sess<currentSchedule.startList.length;sess++){
+
+            ps = newStart.getTime();
+            pe = newEnd.getTime()
+            
+            s = currentSchedule.startList[sess].getTime();
+            e = currentSchedule.endList[sess].getTime();
+            
+            //just the ends. This also handles the case where a proposed session is totally inside an existing one.
+            //note that right now you have to leave a minute between one session and another if you want to have two in a row. But why would you want that? It would just be one session. Maybe a staff shift change? well, these schedules aren't based on that.
+            if (pe>=s && pe<=e){
+                err = "End time is not valid. It's between or equal to the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.";
+                console.log(err);
+                return [false, err];
+            }
+            if (ps>=s && ps<=e){
+                err = "Start time is not valid. It's inside of an existing session. If you want concurrent sessions they have to exist in separate schedules.";
+                console.log(err);
+                return [false, err];
+            }
+            
+            //totally encompassing. another session
+            if (ps<=e && pe>=s){
+                err = "The proposed new session totally includes another session! That's outrageous. You cannot. Absolutely no way. As a computer it is my job to enforce reason and order in this world! I can't allow that sort of thing, sorry. Maybe you should make a new schedule?";
+                console.log(err);
+                return [false, err];
+            }
+        }
+        return [true, "session validated"];
+    }
+
+    const makeNewSession = (event) => {
+        event.preventDefault();
         console.log("New session! Days: start:", day1, " end: ", day2);
-        console.log("Times: start: ", time1, " end: ", time2);
-        console.log('schedule', schedule);
-
-        //I want to combine day1 and time1 into a date object
-        //Then append it to the startList. 
-        //And then sort that startlist in chronological order.
+ 
         //The way the daypicker works is it outputs 2 days. It's set to single mode but it still just outputs the same day as the start and end. 
         let newStart = new Date(`${day1.startDate}T${time1}:00`);
-        console.log("new start obj:", newStart);
         let newEnd = new Date(`${day2.startDate}T${time2}:00`);
-        console.log("new end obj:", newEnd);
-        //Before we proceed - are these start and end times valid? They cannot exist in the middle of existing sessions.
-
-        for (let sess=0;sess<schedule.startList.length;sess++){
-            if (newStart.getTime()>=schedule.startList[sess].getTime()&&newStart.getTime()<=schedule.endList[sess].getTime()){
-                console.log("Start time is not valid. It's between or equal to the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
-                return;
-            }
-
-            if (newEnd.getTime()>=schedule.startList[sess].getTime()&&newEnd.getTime()<=schedule.endList[sess].getTime()){
-                console.log("End time is not valid. It's between or equal to the start and end of an existing session. If you want concurrent sessions they have to exist in separate schedules.");
-                return;
-            }
-
-            //I need another test to reject invalid times. Right now it's possible to make a session that totally includes another one!
-            if (newStart.getTime()<schedule.endList[sess] && newEnd.getTime()>schedule.startList[sess]){
-                console.log("The proposed new session totally includes another session! That's outrageous. You cannot. Absolutely no way. As a computer it is my job to enforce reason and order in this world! I can't allow that sort of thing, sorry. Maybe you should make a new schedule?");
-                return;
-            }
-
+        
+        let isVal = valSession(newStart, newEnd);
+        console.log(isVal);
+        if (isVal[0] === false){
+            console.log(isVal[1]);
+            return;
+        } else {
+            console.log(isVal[1]);
         }
 
         //This seems a bit convoluted but I had some weird errors trying to do it more directly.
@@ -150,25 +171,112 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
 
     //duplicate session tomorrow
     const dupST = (e) => {
-        //If someone clicks this twice it makes an identical session - put in some checking as for newsession.
-        let buildingSchedule = structuredClone(currentSchedule);
 
+
+        let buildingSchedule = structuredClone(currentSchedule);
         let rowDataset = e.target.dataset;
         let sessionID = rowDataset.id;
 
         //duplicate the start time onto the clone
-        console.log("try to dupST:", buildingSchedule.startList[sessionID]);
         let startTime = new Date(buildingSchedule.startList[sessionID]);
-        console.log("startTime:", startTime);
         let endTime = new Date(buildingSchedule.endList[sessionID]);
 
+        
         let tomorrowStart = new Date(buildingSchedule.startList[sessionID]);
         tomorrowStart.setDate(startTime.getDate() + 1);
-
+        
         let tomorrowEnd = new Date(buildingSchedule.endList[sessionID]);
         tomorrowEnd.setDate(endTime.getDate() + 1);
+        
+        let valR = valSession(tomorrowStart, tomorrowEnd);
+        if (!valR[0]){
+            console.log(valR[1]);
+            return(valR[1]);
+        }
 
         buildingSchedule.startList.push(tomorrowStart);
+        //sort the start times and put that sorted list in a new array. I could put it in directly but there are edge cases like multiple sessions the same day then you duplicate the earlier one.
+        let sortedStartList = buildingSchedule.startList.sort((a,b) => a.getTime()-b.getTime())
+        //copy the sorted array into the old spot where the start times list was, replacing it
+        buildingSchedule.startList = sortedStartList;
+
+        //same for end times
+        buildingSchedule.endList.push(tomorrowEnd);
+        let sortedEndList = buildingSchedule.endList.sort((a,b) => a.getTime()-b.getTime());
+        buildingSchedule.endList = sortedEndList;
+
+        setCurrentSchedule({
+            ...buildingSchedule,
+            startList:buildingSchedule.startList,
+            endList:buildingSchedule.endList,
+        })
+    }
+     
+    //duplicate session next week
+    const dupSNW = (e) => {
+
+        let buildingSchedule = structuredClone(currentSchedule);
+        let rowDataset = e.target.dataset;
+        let sessionID = rowDataset.id;
+
+        let startTime = new Date(buildingSchedule.startList[sessionID]);
+        let endTime = new Date(buildingSchedule.endList[sessionID]);
+
+        let nwStart = new Date(buildingSchedule.startList[sessionID]);
+        nwStart.setDate(startTime.getDate() + 7);
+
+        let nwEnd = new Date(buildingSchedule.endList[sessionID]);
+        nwEnd.setDate(endTime.getDate() + 7);
+
+        let valR = valSession(nwStart, nwEnd);
+        if (!valR[0]){
+            console.log(valR[1]);
+            return(valR[1]);
+        }
+
+        buildingSchedule.startList.push(nwStart);
+        //sort the start times and put that sorted list in a new array. I could put it in directly but there are edge cases like multiple sessions the same day then you duplicate the earlier one.
+        let sortedStartList = buildingSchedule.startList.sort((a,b) => a.getTime()-b.getTime())
+        //copy the sorted array into the old spot where the start times list was, replacing it
+        buildingSchedule.startList = sortedStartList;
+
+        //same for end times
+        buildingSchedule.endList.push(nwEnd);
+        let sortedEndList = buildingSchedule.endList.sort((a,b) => a.getTime()-b.getTime());
+        buildingSchedule.endList = sortedEndList;
+
+        setCurrentSchedule({
+            ...buildingSchedule,
+            startList:buildingSchedule.startList,
+            endList:buildingSchedule.endList,
+        })
+    }
+
+    //duplicate session next month
+    const dupSNM = (e) => {
+
+        let buildingSchedule = structuredClone(currentSchedule);
+        let rowDataset = e.target.dataset;
+        let sessionID = rowDataset.id;
+
+        //duplicate the start time onto the clone
+        let startTime = new Date(buildingSchedule.startList[sessionID]);
+        let endTime = new Date(buildingSchedule.endList[sessionID]);
+
+        //If it's Dec, will this roll over?
+        let nmStart = new Date(buildingSchedule.startList[sessionID]);
+        nmStart.setDate(startTime.getMonth() + 1);
+
+        let nmEnd = new Date(buildingSchedule.endList[sessionID]);
+        nmEnd.setDate(endTime.getMonth() + 1);
+
+        let valR = valSession(nmStart, nmEnd);
+        if (!valR[0]){
+            console.log(valR[1]);
+            return(valR[1]);
+        }
+        buildingSchedule.startList.push(nmStart);
+
         //sort the start times and put that sorted list in a new array. I could put it in directly but there are edge cases like multiple sessions the same day then you duplicate the earlier one.
         let sortedStartList = buildingSchedule.startList.sort((a,b) => a.getTime()-b.getTime())
         //copy the sorted array into the old spot where the start times list was, replacing it
@@ -176,7 +284,7 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
         console.log(buildingSchedule.startList);
 
         //same for end times
-        buildingSchedule.endList.push(tomorrowEnd);
+        buildingSchedule.endList.push(nmEnd);
         let sortedEndList = buildingSchedule.endList.sort((a,b) => a.getTime()-b.getTime());
         buildingSchedule.endList = sortedEndList;
         console.log(buildingSchedule.endList);
@@ -187,12 +295,11 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
             endList:buildingSchedule.endList,
         })
     }
-     
+    
     return(
         <>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                    {/* Start session (camper arrive) */}
                     <p>START</p>
                     <Datepicker 
                         asSingle={true}
@@ -205,7 +312,6 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
                 </div>
 
                 <div className="sm:col-span-3">
-                    {/* End session (campers leave) */}
                     <p>END</p>
                     <Datepicker 
                         asSingle={true}
@@ -213,7 +319,6 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
                         onChange={handleDayChange2} 
                     /> 
 
-                    {/* <label for="end">Camper end time</label> */}
                     <input className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     type="time" id="end" name="end" required onChange={handleTimeChange2}  />
                 </div>
@@ -223,8 +328,7 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
                 Add Session<ArrowDownIcon className="ml-auto h-5 w-5 text-gray-50" />
             </Button>
             {/* This table displays the prepared schedule and lets you delete or duplicate sessions */}
-            <ScheduleTable scheduleNow = {currentSchedule} delSession = {delSession} dupST = {dupST} />
-        {/* </form> */}
+            <ScheduleTable scheduleNow = {currentSchedule} delSession = {delSession} dupST = {dupST} dupSNW = {dupSNW} dupSNM = {dupSNM} />
 
         </>
     )
