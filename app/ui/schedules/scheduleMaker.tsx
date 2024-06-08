@@ -13,6 +13,8 @@ import { ArrowDownIcon } from '@heroicons/react/20/solid';
 //This accepts the whole object of a schedule it could be that if someone in the future modifies this to change the name here in this component. Now you have two copies of the data and it's confusing. So better not do that I guess. The other option is to destructure/pass on only what is required.
 
 export default function ScheduleMaker({ schedule } : {schedule:Schedule}){ 
+
+    
     console.log("Hello yes time to edit a schedule")
     console.log(schedule);
     //state for choosing dates for a session
@@ -56,6 +58,7 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
     //
     // const [schedule, setSchedule] = useState({startList: startList, endList:endList});
     console.log("trying to keep schedule as a state: ", schedule)
+
     const makeNewSession = (e) => {
         e.preventDefault();
         console.log("New session! Days: start:", day1, " end: ", day2);
@@ -94,23 +97,95 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
         //This seems a bit convoluted but I had some weird errors trying to do it more directly.
 
         //similar to the old JSON.stringify then JSON.parse. structuredClone preserves types better.
+        //Clone current schedule
         let buildingSchedule = structuredClone(currentSchedule);
+
+        //Push the new start time onto the clone
         buildingSchedule.startList.push(newStart);
+        //sort the start times and put that sorted list in a new array.
         let sortedStartList = buildingSchedule.startList.sort((a,b) => a.getTime()-b.getTime())
+        //copy the sorted array into the old spot where the start times list was, replacing it
         buildingSchedule.startList = sortedStartList;
         console.log(buildingSchedule.startList);
 
+        //same for end times
         buildingSchedule.endList.push(newEnd);
         let sortedEndList = buildingSchedule.endList.sort((a,b) => a.getTime()-b.getTime())
         buildingSchedule.endList = sortedEndList;
         console.log(buildingSchedule.endList);
+        
 
-        // return (schedule)
         setCurrentSchedule({
             ...buildingSchedule,
             startList:buildingSchedule.startList,
             endList:buildingSchedule.endList
         });
+    }
+
+    const delSession = (e) =>{
+        console.log("e", e);
+        let myObject = e.target.getAttribute("data-id");
+        console.log("myobject", myObject);
+        let buildingSchedule = structuredClone(currentSchedule);
+
+        //delete the session. Which session is carried in as e.
+        let rowDataset = e.target.dataset;
+        console.log("rowDataset:", rowDataset);
+        let sessionID = rowDataset.id;
+
+        // buildingSchedule = buildingSchedule.splice(sessionID, 1);
+        console.log("sessID:", sessionID);
+        //delete the start time onto the clone
+        buildingSchedule.startList.splice(sessionID,1);
+
+        //same for end times
+        buildingSchedule.endList.splice(sessionID,1);
+
+        setCurrentSchedule({
+            ...buildingSchedule,
+            startList:buildingSchedule.startList,
+            endList:buildingSchedule.endList
+        });
+    }
+
+    //duplicate session tomorrow
+    const dupST = (e) => {
+        //If someone clicks this twice it makes an identical session - put in some checking as for newsession.
+        let buildingSchedule = structuredClone(currentSchedule);
+
+        let rowDataset = e.target.dataset;
+        let sessionID = rowDataset.id;
+
+        //duplicate the start time onto the clone
+        console.log("try to dupST:", buildingSchedule.startList[sessionID]);
+        let startTime = new Date(buildingSchedule.startList[sessionID]);
+        console.log("startTime:", startTime);
+        let endTime = new Date(buildingSchedule.endList[sessionID]);
+
+        let tomorrowStart = new Date(buildingSchedule.startList[sessionID]);
+        tomorrowStart.setDate(startTime.getDate() + 1);
+
+        let tomorrowEnd = new Date(buildingSchedule.endList[sessionID]);
+        tomorrowEnd.setDate(endTime.getDate() + 1);
+
+        buildingSchedule.startList.push(tomorrowStart);
+        //sort the start times and put that sorted list in a new array. I could put it in directly but there are edge cases like multiple sessions the same day then you duplicate the earlier one.
+        let sortedStartList = buildingSchedule.startList.sort((a,b) => a.getTime()-b.getTime())
+        //copy the sorted array into the old spot where the start times list was, replacing it
+        buildingSchedule.startList = sortedStartList;
+        console.log(buildingSchedule.startList);
+
+        //same for end times
+        buildingSchedule.endList.push(tomorrowEnd);
+        let sortedEndList = buildingSchedule.endList.sort((a,b) => a.getTime()-b.getTime());
+        buildingSchedule.endList = sortedEndList;
+        console.log(buildingSchedule.endList);
+
+        setCurrentSchedule({
+            ...buildingSchedule,
+            startList:buildingSchedule.startList,
+            endList:buildingSchedule.endList,
+        })
     }
      
     return(
@@ -148,7 +223,7 @@ export default function ScheduleMaker({ schedule } : {schedule:Schedule}){
                 Add Session<ArrowDownIcon className="ml-auto h-5 w-5 text-gray-50" />
             </Button>
             {/* This table displays the prepared schedule and lets you delete or duplicate sessions */}
-            <ScheduleTable scheduleNow = {currentSchedule}/>
+            <ScheduleTable scheduleNow = {currentSchedule} delSession = {delSession} dupST = {dupST} />
         {/* </form> */}
 
         </>

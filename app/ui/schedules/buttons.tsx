@@ -2,22 +2,22 @@ import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { deleteSchedule } from '@/app/lib/actions';
 
-export function DeleteSession(id, session){
-  //delete the session with id id from the sessions array and send the modified array back
-  return ('d');
-}
-export function DuplicateSessionTomorrow(id, session){
-  //duplicate the session with id id except change start and end dates to the next day on the duplicate.
-  return ('dupt');
-}
+// export function DeleteSession({id, cb}){
+//   //delete the session with id id from the sessions array and send the modified array back
+//   return ('d');
+// }
+// export function DuplicateSessionTomorrow(id, session){
+//   //duplicate the session with id id except change start and end dates to the next day on the duplicate.
+//   return ('dupt');
+// }
 
-export function DuplicateSessionNextWeek(id, session){
-  return ('dupnw');
-}
+// export function DuplicateSessionNextWeek(id, session){
+//   return ('dupnw');
+// }
 
-export function DuplicateSessionNextMonth(id, session){
-  return ('dupnm');
-}
+// export function DuplicateSessionNextMonth(id, session){
+//   return ('dupnm');
+// }
 
 
 export function CreateSchedule() {
@@ -32,7 +32,7 @@ export function CreateSchedule() {
   );
 }
 
-export function UpdateSchedule({ id }: { id: string }) {
+export function UpdateSchedule({ id }) {
   return (
     <Link
       href={`/dashboard/schedules/${id}/edit`}
@@ -43,7 +43,7 @@ export function UpdateSchedule({ id }: { id: string }) {
   );
 }
 
-export function DeleteSchedule({ id }: { id: string }) {
+export function DeleteSchedule({ id }) {
   const deleteScheduleWithId = deleteSchedule.bind(null, id);
 
   return (

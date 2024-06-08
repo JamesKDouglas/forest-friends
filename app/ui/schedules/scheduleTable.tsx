@@ -1,7 +1,9 @@
  import {Schedule} from '@/app/lib/definitions'
- import { DeleteSession, DuplicateSessionTomorrow, DuplicateSessionNextWeek, DuplicateSessionNextMonth } from '@/app/ui/schedules/buttons'
+ import { Button } from '@/app/ui/button';
 
- export default function ScheduleTable({scheduleNow}: {scheduleNow:Schedule}){
+//  import { DeleteSession, DuplicateSessionTomorrow, DuplicateSessionNextWeek, DuplicateSessionNextMonth } from '@/app/ui/schedules/buttons'
+
+ export default function ScheduleTable({scheduleNow, delSession, dupST}: {scheduleNow:Schedule, delSession:Function, dupST:Function}){
   console.log("schedule passed to table:", scheduleNow);
     //Each row of the table will have a session. I could do that in the jsx or here.
     let sessions = [];
@@ -13,6 +15,12 @@
           ${scheduleNow.endList[i].getHours()}:${scheduleNow.endList[i].getMinutes()}`
         ]);
     }
+
+    // const deleteSession = (e) => {
+    //   e.preventDefault();
+    //   console.log("delete function called!");
+    //   console.log('old schedule', schedule);
+    //   }
 
 
     return(
@@ -75,12 +83,12 @@
                     <tbody className="bg-white">
                       {sessions?.map((session) => (
                         <tr
-                          key={session[0].toString()}
+                          key={session[0].toString()} 
                           className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                           >
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
-                                <p>{session[1].toString()}</p>
+                              <p>{session[1].toString()}</p>
                             </div>
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
@@ -92,22 +100,29 @@
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
-                              <DeleteSession id={session[0]} />
+                              <button onClick = {delSession} data-id = {session[0].toString()}>
+                                del
+                              </button>
                             </div>
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
-                              <DuplicateSessionTomorrow id={session[0]} session = {session}/>
+                              <button onClick = {dupST} data-id = {session[0].toString()}>
+                                dupST
+                              </button>
+                              {/* <DuplicateSessionTomorrow id={session[0]} session = {session}/> */}
                             </div>
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
-                              <DuplicateSessionNextWeek id={session[0]} session = {session}/>
+                              dupSNW
+                              {/* <DuplicateSessionNextWeek id={session[0]} session = {session}/> */}
                             </div>
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
-                              <DuplicateSessionNextMonth id={session[0]} session = {session}/>
+                              dupSNM
+                              {/* <DuplicateSessionNextMonth id={session[0]} session = {session}/> */}
                             </div>
                           </td>
                         </tr>

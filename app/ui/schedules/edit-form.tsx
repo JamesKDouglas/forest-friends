@@ -73,10 +73,8 @@ export default function Form({
           </div>
         </div>
 
-        {/* Current Schedule 
-        */}
+        {/* Current Schedule */}
         <ScheduleMaker schedule = {schedule}/>
-        
       </div>
       
       <div className="mt-6 flex justify-end gap-4">
