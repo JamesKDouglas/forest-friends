@@ -20,6 +20,13 @@ export default function Form({
   const initialState  = {message: null, errors:{}};
   const updateScheduleById = updateSchedule.bind(null, schedule.id);
 
+  let newStartListStr = "";
+  let newEndListStr = "";
+  const prepFormInput = ({newStartList, newEndList}:{newStartList:string, newEndList:string}) => {
+    newStartListStr = newStartList;
+    newEndListStr = newStartList;
+  }
+
   return (
     <form>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">

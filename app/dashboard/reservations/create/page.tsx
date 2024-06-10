@@ -1,6 +1,5 @@
 import Form from '@/app/ui/reservations/create-form';
 import Breadcrumbs from '@/app/ui/reservations/breadcrumbs';
-// import { fetchCustomers } from '@/app/lib/data';
 import { fetchSchedules } from '@/app/lib/data';
 import { Metadata } from 'next';
 

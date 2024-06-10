@@ -64,21 +64,6 @@ export default function Form({schedule}: {schedule:Schedule}) {
           <label htmlFor="schedule" className="mb-2 block text-sm font-medium">
             Use the Schedule Builder to decribe the exact schedule.
           </label>
-            {/* I'm going to need sort of date picker thing. Try to find something like an IoT Wifi plug - generate a list of start/stop times. Imagine starting manually with just a date/time input then making it easier to enter with some widgets like, "duplicate for tomorrow" "duplicate for next week" "duplicate for next month". 
-
-            This is a special kind of date picker. 
-
-            This is a sub-form for each 'session': 
-            Choose a start date/time - Use a drop down date picker to choose the day. Use another to choose the time. modify these by typing if you want. 
-            Choose the an date the same way.
-            Then have an "add" button. This could literally add to the database record with append except there is no record right now, so just hold it in state.
-
-            Then a table showing what has been build - column headings are:
-             "start date/time" "end date/time" "delete" "+ next day" "+ next week" "+ next month".
-            
-             Each entry/row will get an icon for the delete and duplication. 
-
-            */}
           
       </div>
       <div className="mt-6 flex justify-end gap-4">

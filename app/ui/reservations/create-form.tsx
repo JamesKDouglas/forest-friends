@@ -13,17 +13,6 @@ import { Button } from '@/app/ui/button';
 import { createReservation } from '@/app/lib/actions';
 import { useFormState } from 'react-dom';
 
-
-// id: number;
-// createdAt: string;
-// updatedAt: string;
-// email: string;
-// customerName: string;
-// childNames: string;
-// amount: number;
-// paid: true | false; 
-// notes: string;
-// schedule: number;
 export default function Form({schedules}: {schedules:Schedules}) {
   const initialState = { message: null, errors: {}};
   const [state, dispatch] = useFormState(createReservation, initialState);
