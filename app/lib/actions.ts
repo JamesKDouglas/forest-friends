@@ -2,13 +2,10 @@
 import {z} from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from './client'
 
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-
-
-const prisma = new PrismaClient();
 
 const FormSchema = z.object({
     id: z.coerce.number(),
@@ -203,20 +200,21 @@ export type StateUpdateSched = {
     id: string[];
     name?: string[];
     desc?: string[];
-    startList?: Date[];
-    endList?: Date[];
   };
   message?: string | null;
 };
 
-export async function updateSchedule(formData: FormData) {
-  //The updated schedule isn't part of the formData because it's a child component rather than an input field.
-  //When this function is called I trigger the chain of callbacks to get that data from the child.
-  let {startListIn, endListIn} = liftedData;
+export async function updateSchedule(scheduleState: Array<Array<Any>>, prevState: StateUpdateSched, formData: FormData) {
 
-  //The startList and endList are arrays of Date objects. Can I even keep this in a FormData type?
+  // console.log("scheduleState inside updateSchedule server action function:", scheduleState);
+  let [startListIn, endListIn] = scheduleState;
+  startListIn = startListIn.map((el)=>new Date(el));
+  endListIn = endListIn.map((el)=> new Date(el));
+  // console.log("arrays representing modified schedule", startListIn, endListIn);
+  // console.log("typeof one element", typeof(startListIn[0]));
+
   const validatedFields = UpdateSchedule.safeParse({
-    id: id,
+    id: formData.get('id'),
     name: formData.get('name'),
     desc: formData.get('desc'),
     startList: startListIn,
