@@ -209,17 +209,18 @@ export type StateUpdateSched = {
   message?: string | null;
 };
 
-export async function updateSchedule(id: number, prevState: StateUpdateSched,
-  formData: FormData,
-) {
+export async function updateSchedule(formData: FormData) {
+  //The updated schedule isn't part of the formData because it's a child component rather than an input field.
+  //When this function is called I trigger the chain of callbacks to get that data from the child.
+  let {startListIn, endListIn} = liftedData;
 
   //The startList and endList are arrays of Date objects. Can I even keep this in a FormData type?
   const validatedFields = UpdateSchedule.safeParse({
     id: id,
     name: formData.get('name'),
     desc: formData.get('desc'),
-    startList: formData.get('startList'),
-    endList: formData.get('endList'),
+    startList: startListIn,
+    endList: endListIn,
   });
 
   console.log("validated fields: ", validatedFields);
@@ -230,7 +231,7 @@ export async function updateSchedule(id: number, prevState: StateUpdateSched,
       message: "Missing Fields. Failed to Update Schedule."
     }
   }
-  const { name, desc, startList, endList } = validatedFields.data;
+  const { id, name, desc, startList, endList } = validatedFields.data;
   
   try{
     const response = await prisma.schedule.update({

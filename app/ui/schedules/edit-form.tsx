@@ -18,7 +18,21 @@ export default function Form({
 }) {
 
   const initialState  = {message: null, errors:{}};
-  const updateScheduleById = updateSchedule.bind(null, schedule.id);
+
+  // const updateScheduleById = updateSchedule.bind(null, schedule.id);
+  
+  // function onSubmit(event) {
+  //   event.preventDefault();
+  //   const data = new FormData(event.target);
+
+  // }
+  let liftedData = {};//The whole schedule gets sent up, even though that isn't quite necessary
+  function cb1(dataToLift){
+    liftedData = dataToLift;
+    console.log("cb1 called! trying to send this to the server: ", liftedData);
+  }
+
+  const [state, dispatch] = useFormState(updateSchedule, initialState);
 
   let newStartListStr = "";
   let newEndListStr = "";
@@ -81,7 +95,7 @@ export default function Form({
         </div>
 
         {/* Current Schedule */}
-        <ScheduleMaker schedule = {schedule}/>
+        <ScheduleMaker schedule = {schedule} cb1 = {cb1} />
       </div>
       
       <div className="mt-6 flex justify-end gap-4">

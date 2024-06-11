@@ -1,9 +1,11 @@
  import {Schedule} from '@/app/lib/definitions'
  import { Button } from '@/app/ui/button';
+ import { XCircleIcon } from '@heroicons/react/20/solid';
+
 
  export default function ScheduleTable({scheduleNow, delSession, dupST, dupSNW, dupSNM}: {scheduleNow:Schedule, delSession:Function, dupST:Function, dupSNW:Function, dupSNM:Function}){
-  console.log("schedule passed to table:", scheduleNow);
-    //Each row of the table will have a session. I could do that in the jsx or here.
+  // console.log("schedule passed to table:", scheduleNow);
+    //Each row of the table will have a session.
     let sessions = [];
     for (let i=0;i<scheduleNow.startList.length;i++){
         sessions.push([i, 
@@ -13,6 +15,7 @@
           ${scheduleNow.endList[i].getHours()}:${scheduleNow.endList[i].getMinutes()}`
         ]);
     }
+
 
     return(
         <>
@@ -63,28 +66,28 @@
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
                               <button onClick = {delSession} data-id = {session[0].toString()}>
-                                del
+                               <XCircleIcon className="ml-auto h-5 w-5 text-gray" />
                               </button>
                             </div>
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
                               <button onClick = {dupST} data-id = {session[0].toString()}>
-                                dupST
+                                T
                               </button>
                             </div>
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
                               <button onClick = {dupSNW} data-id = {session[0].toString()}>
-                                dupSNW
+                                NW
                               </button>
                             </div>
                           </td>
                           <td className="whitespace-nowrap py-3 pl-6 pr-3">
                             <div className="flex items-center gap-3">
                               <button onClick = {dupSNM} data-id = {session[0].toString()}>
-                                dupSNM
+                                NM
                               </button>
                             </div>
                           </td>
