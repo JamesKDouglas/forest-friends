@@ -189,8 +189,8 @@ const FormSchemaSchedule = z.object({
   id: z.coerce.number(),
   name: z.string().min(1, {message: "Please enter a schedule name"}),
   desc: z.string().min(1, {message: "Please enter a description"}),
-  startList: z.array(Date),
-  endList: z.array(Date),
+  startList: z.date().array(),
+  endList: z.date().array(),
 });
 
 const UpdateSchedule = FormSchemaSchedule.omit({});
