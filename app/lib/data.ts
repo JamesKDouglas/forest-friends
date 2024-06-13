@@ -1,4 +1,4 @@
-// I'm rewriting this to use Prisma. It used to use Vercel's sql function.
+
 //This page has all the functions responsible for interacting with the database. 
 
 import type { Schedule, Reservation } from '@prisma/client';//Reservations is a type defined in definitons.ts. Can I import this from the Prisma client?
@@ -9,13 +9,6 @@ import { unstable_noStore as noStore } from 'next/cache';
 const { expectedAttendance } = require('@/app/lib/placeholder-data.js');
 const prisma = new PrismaClient();
 const ITEMS_PER_PAGE = 6;
-
-// export async function getReservations(){
-//     noStore();
-//     const allRes = await prisma.reservation.findMany();
-//     // console.log(allRes);
-//     return allRes;
-// }
 
 export async function fetchReservationsPages(query: string){
     noStore();
@@ -42,7 +35,6 @@ export async function fetchReservationsPages(query: string){
             });
         }
         console.log("count of records found:", count);
-        // let totalPages = 0;//I'm getting a typeerror stating that this is undefined? Well, I'll define it here then to make a default.
         const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
         console.log(typeof(totalPages));
         return totalPages;
@@ -53,7 +45,6 @@ export async function fetchReservationsPages(query: string){
 }
 
 export async function fetchLatestReservations(){
-    // await new Promise((resolve)=>setTimeout(resolve, 3000));
 
     noStore();
     const latestRes = await prisma.reservation.findMany({
@@ -63,16 +54,13 @@ export async function fetchLatestReservations(){
         take: 5,
     });
 
-    // console.log("latestReservations:", latestRes);
     return latestRes;
 }
 
 export async function fetchAttendance(){
-    // await new Promise((resolve)=>setTimeout(resolve, 3000));
     noStore();
-    let period = "days"; //I would like to build this out so you could toggle to weeks. Whatever. Start with days.
+    let period = "days"; //I would like to build this out so you could toggle to weeks. Start with days.
     
-    // console.log(period);
     //get all the reservations made in the past x days
     let days =0;
     if (period == "days"){
@@ -96,34 +84,19 @@ export async function fetchAttendance(){
         }
     });
 
-    //now summarize how many people are coming in each day OR each week.
-    //what does the object look like when returned by prisma? What kind of methods does it have?
+    //summarize how many people are coming in each day
 
     // right now there is a "one child one reservation" policy. Parents can still use autofill on the form of course. But they can't literally just set # of children to 2 or more on a single form - there is only one place for the child name.
 
     // I should put in an easter egg for "Johnny" "DROP TABLE". Just console log a "lol, good one." Confetti?
 
-    // console.log(upcomingRes)
-
     //fudge it for now,
     return expectedAttendance;
-    // let summaryAtt = [];
-    // if (period == "days"){
-    //     //
-    //     for (let i=0;i<6;i++){
-
-    //         summaryAtt.push()
-    //     }
-    // } else if (period == "weeks"){
-
-    // }
 
 }
 
 export async function fetchSchedules(){
-    // noStore();//I don't really want the whole schedule table being looked up with each reservation search.
     const allSchedules = await prisma.schedule.findMany();
-    // console.log(allSchedules);
     return allSchedules;
 }
 
@@ -157,13 +130,10 @@ export async function fetchFilteredSchedules(
                 OR: [
                     {desc: { contains: query, mode: 'insensitive' }},
                     {name: { contains: query, mode: 'insensitive' }},
-                    // {startList: { contains: query, mode: 'insensitive' }},
-                    // {endList: { contains: query, mode: 'insensitive' }},
                 ]
             }
         });
         
-        // console.log(data);
         return data;
     } catch (e){
         console.log(e);
@@ -213,7 +183,6 @@ export async function fetchFilteredReservations(
                 }
             });
         }
-        // console.log(data);
         return data;
     } catch (e){
         console.log(e);
@@ -229,21 +198,17 @@ export async function fetchSchedulesPages(query: string){
                 OR: [
                     {desc: { contains: query, mode: 'insensitive' }},
                     {name: { contains: query, mode: 'insensitive' }},
-                    // {startList: { contains: query, mode: 'insensitive' }},
-                    // {endList: { contains: query, mode: 'insensitive' }},
                 ]
             }
         });
         
         console.log("count of schedules found:", count);
-        // let totalPages = 0;//I'm getting a typeerror stating that this is undefined? Well, I'll define it here then to make a default.
         const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
         console.log(typeof(totalPages));
         return totalPages;
     } catch(e){
         console.log(e);
     }
-
 }
 
 export async function fetchReservationById(id: number){
@@ -267,8 +232,7 @@ export async function fetchReservationById(id: number){
 }
 
 export async function fetchCardData(){
-    // await new Promise((resolve) => setTimeout(resolve, 3000)); Delay to test skeleton
-
+    
     //Here we fetch some data from tables and process it into summaries:
     //1. How much revenue has been collected this calendar year. - get all of them since jan 1 and add all the amounts.
     //2. How much in outstanding payments stand now. - get all reservations that are marked paid: false since jan 1 and sum them.
@@ -299,8 +263,6 @@ export async function fetchCardData(){
 
             }
         );
-        // console.log(reservationsThisYear);
-
         resThisYr = Object.keys(reservationsThisYear).length;
 
         let custNames = reservationsThisYear.map((el: Reservation)=>el.customerName);
@@ -316,33 +278,17 @@ export async function fetchCardData(){
                 return 0;
             }
         }).reduce((a:number,c:number) => a+c,0);
-
-        // console.log("payment values outstanding:", paymentOutst);
-        // paymentOutst = paymentOutst.reduce((a:number,c:number)=>a+c,0);
         return {
             revThisYr,
             paymentOutst,
             resThisYr,
             custThisYr,
         }
-
     } catch(err) {
         console.log(err);
         throw new Error("trouble with card data");
     }
-
 }
-
-// export async function updateSchedule(id: number, newScheduleData: Schedule){
-//     noStore();
-//     console.log(newScheduleData);
-//     const schedule = await prisma.schedule.update({
-//         where: { id: id },
-//         data: {newScheduleData},
-//     })
-
-//     console.log("schedule updated!", schedule);
-// }
 
 export async function putReservation(newReservationData: Reservation){
     noStore();
