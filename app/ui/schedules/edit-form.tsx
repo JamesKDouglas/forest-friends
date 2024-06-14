@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import ScheduleMaker from '@/app/ui/schedules/scheduleMaker';
 import { useFormState } from 'react-dom';
+import { useState } from 'react';
 import { updateSchedule } from '@/app/lib/actions';
 
 export default function Form({
@@ -19,20 +20,13 @@ export default function Form({
 
   const initialState  = {message: null, errors:{}};
 
-  // const updateScheduleById = updateSchedule.bind(null, schedule.id);
-  
-  // function onSubmit(event) {
-  //   event.preventDefault();
-  //   const data = new FormData(event.target);
+  const [scheduleState, setScheduleState] = useState([schedule.startList, schedule.endList]);
 
-  // }
-  let liftedData = {};//The whole schedule gets sent up, even though that isn't quite necessary
   function cb1(dataToLift){
-    liftedData = dataToLift;
-    console.log("cb1 called! trying to send this to the server: ", liftedData);
+    setScheduleState([dataToLift.startList, dataToLift.endList]);
   }
 
-  const [state, dispatch] = useFormState(updateSchedule, initialState);
+  const [state, dispatch] = useFormState(updateSchedule.bind(null, scheduleState), initialState);
 
   let newStartListStr = "";
   let newEndListStr = "";
@@ -42,7 +36,7 @@ export default function Form({
   }
 
   return (
-    <form>
+    <form noValidate action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
       <label htmlFor="customer" className="mb-2 block text-sm font-medium">
             Schedule Id (not changeable)
@@ -95,7 +89,7 @@ export default function Form({
         </div>
 
         {/* Current Schedule */}
-        <ScheduleMaker schedule = {schedule} cb1 = {cb1} />
+        <ScheduleMaker schedule = {schedule} cb1 = {cb1} setScheduleState = {setScheduleState}/>
       </div>
       
       <div className="mt-6 flex justify-end gap-4">

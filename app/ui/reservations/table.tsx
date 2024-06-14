@@ -1,6 +1,5 @@
 import { UpdateReservation, DeleteReservation } from '@/app/ui/reservations/buttons';
 import ReservationStatus from '@/app/ui/reservations/status';
-// import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
 import { fetchFilteredReservations, fetchSchedules } from '@/app/lib/data';
 
 export default async function ReservationsTable({
@@ -10,10 +9,7 @@ export default async function ReservationsTable({
   query: string;
   currentPage: number;
 }) {
-  // console.log("query as it comes into table.tsx:", query);
   const reservations = await fetchFilteredReservations(query, currentPage);
-  // const schedules = await fetchSchedules();
-  // console.log(reservations);
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">

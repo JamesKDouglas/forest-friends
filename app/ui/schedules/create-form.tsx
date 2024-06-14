@@ -18,7 +18,6 @@ export default function Form({schedule}: {schedule:Schedule}) {
   const initialState = { message: null, errors: {}};
   const [state, dispatch] = useFormState(createSchedule, initialState);
 
-  // const schedules = await fetchSchedules();
   console.log("Schedule: ", schedule);
   return (
     <form action={dispatch}>

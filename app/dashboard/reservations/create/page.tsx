@@ -7,9 +7,7 @@ export const metadata: Metadata = {
   title: "Create Reservation",
 };
 
- 
 export default async function Page() {
-//   const customers = await fetchCustomers();
   const schedules = await fetchSchedules();
  
   return (

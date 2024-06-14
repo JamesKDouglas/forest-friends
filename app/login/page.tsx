@@ -1,6 +1,7 @@
 import Logo from '@/app/ui/logo';
-import LoginForm from '@/app/ui/login-form';
+import LoginForm from '@/app/ui/login/login-form';
 import { Metadata } from 'next';
+import SignupButton from '@/app/ui/login/signup-button';
 
 export const metadata: Metadata = {
   title: "Login",

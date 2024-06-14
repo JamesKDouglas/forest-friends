@@ -10,13 +10,8 @@ import Datepicker from "react-tailwindcss-datepicker";
 import { Button } from '@/app/ui/button';
 import { ArrowDownIcon } from '@heroicons/react/20/solid';
 
-//This accepts the whole object of a schedule it could be that if someone in the future modifies this to change the name here in this component. Now you have two copies of the data and it's confusing. So better not do that I guess. The other option is to destructure/pass on only what is required.
+export default function ScheduleMaker({ schedule, cb1, setScheduleState } : {schedule:Schedule, cb1:Function, setScheduleState:Function}){ 
 
-export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb1:Function}){ 
-    console.log("cb1:", cb1);
-    
-    // console.log("Hello yes time to edit a schedule")
-    // console.log(schedule);
     //state for choosing dates for a session
     const [day1, setDay1] = useState({ 
         startDate: null, 
@@ -64,13 +59,17 @@ export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb
         //ps proposed start, pe proposed end.
         let ps = 0;
         let pe = 0;
-
         let err = "";
-
+        
         for (let sess=0;sess<currentSchedule.startList.length;sess++){
-
+            
             ps = newStart.getTime();
             pe = newEnd.getTime()
+
+            if (ps === pe){
+                err = "Start time can't be the same as end time!"
+                return [false, err];
+            }
             
             s = currentSchedule.startList[sess].getTime();
             e = currentSchedule.endList[sess].getTime();
@@ -100,7 +99,6 @@ export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb
 
     const makeNewSession = (event) => {
         event.preventDefault();
-        // console.log("New session! Days: start:", day1, " end: ", day2);
  
         //The way the daypicker works is it outputs 2 days. It's set to single mode but it still just outputs the same day as the start and end. 
         let newStart = new Date(`${day1.startDate}T${time1}:00`);
@@ -127,15 +125,12 @@ export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb
         let sortedStartList = buildingSchedule.startList.sort((a,b) => a.getTime()-b.getTime())
         //copy the sorted array into the old spot where the start times list was, replacing it
         buildingSchedule.startList = sortedStartList;
-        // console.log(buildingSchedule.startList);
 
         //same for end times
         buildingSchedule.endList.push(newEnd);
         let sortedEndList = buildingSchedule.endList.sort((a,b) => a.getTime()-b.getTime())
         buildingSchedule.endList = sortedEndList;
         // console.log(buildingSchedule.endList);
-        
-
         setCurrentSchedule({
             ...buildingSchedule,
             startList:buildingSchedule.startList,
@@ -146,35 +141,28 @@ export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb
     }
 
     const delSession = (e) =>{
-        // console.log("e", e);
-        let myObject = e.target.getAttribute("data-id");
-        // console.log("myobject", myObject);
         let buildingSchedule = structuredClone(currentSchedule);
-
-        //delete the session. Which session is carried in as e.
+        e.preventDefault();
+        //delete the session.
         let rowDataset = e.target.dataset;
-        // console.log("rowDataset:", rowDataset);
         let sessionID = rowDataset.id;
 
-        // buildingSchedule = buildingSchedule.splice(sessionID, 1);
-        // console.log("sessID:", sessionID);
-        //delete the start time onto the clone
         buildingSchedule.startList.splice(sessionID,1);
-
-        //same for end times
         buildingSchedule.endList.splice(sessionID,1);
 
+        //Write out using a hook
         setCurrentSchedule({
             ...buildingSchedule,
             startList:buildingSchedule.startList,
             endList:buildingSchedule.endList
         });
-
-        cb1(currentSchedule);
+        console.log("schedule sent to cb1 from delSession", buildingSchedule);
+        cb1(buildingSchedule);
     }
 
     //duplicate session tomorrow
     const dupST = (e) => {
+        e.preventDefault();
         let buildingSchedule = structuredClone(currentSchedule);
         let rowDataset = e.target.dataset;
         let sessionID = rowDataset.id;
@@ -213,12 +201,12 @@ export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb
             endList:buildingSchedule.endList,
         });
 
-        cb1(currentSchedule);
+        cb1(buildingSchedule);
     }
      
     //duplicate session next week
     const dupSNW = (e) => {
-
+        e.preventDefault();
         let buildingSchedule = structuredClone(currentSchedule);
         let rowDataset = e.target.dataset;
         let sessionID = rowDataset.id;
@@ -255,12 +243,12 @@ export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb
             endList:buildingSchedule.endList,
         });
 
-        cb1(currentSchedule);
+        cb1(buildingSchedule);
     }
 
     //duplicate session next month
     const dupSNM = (e) => {
-
+        e.preventDefault();
         let buildingSchedule = structuredClone(currentSchedule);
         let rowDataset = e.target.dataset;
         let sessionID = rowDataset.id;
@@ -301,7 +289,7 @@ export default function ScheduleMaker({ schedule, cb1 } : {schedule:Schedule, cb
             endList:buildingSchedule.endList,
         });
 
-        cb1(currentSchedule);
+        cb1(buildingSchedule);
     }
     
     return(
